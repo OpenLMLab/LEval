@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LEval Leaderboard</title>
+  
+  <!-- 引入Bootstrap样式 -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  
+  <style>
+  /* 页面样式 */
+
+  body {
+    font-family: Arial, sans-serif;
+  }
+
+  h1 {
+    text-align: center; 
+  }
+
+  #toggle-menu {
+    display: flex;
+    justify-content: center;
+  }
+
+  #toggle-menu .btn {
+    margin: 0 10px;
+    padding: 8px 16px;
+    font-size: 16px;
+  }
+
+  #leaderboard {
+    margin-top: 50px;
+    box-shadow: 0 0 10px #ddd;
+  }
+
+  #leaderboard th,
+  #leaderboard td {
+    text-align: center;
+    padding: 10px;
+  }
+
+  #leaderboard th {
+    background: #555;
+    color: #fff;
+  }
+
+  #leaderboard tr:nth-child(even) {
+    background: #f5f5f5;
+  }
+
+  #leaderboard tr:hover {
+    background: #ddd;
+  }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>LEval Leaderboard</h1>
+
+    <div id="toggle-menu">
+      <button class="btn btn-primary active" id="btn-objective">Objective</button>
+      <button class="btn btn-secondary" id="btn-pairwise">Pairwise</button>
+
+      <div class="btn-group" role="group">
+        <button class="btn btn-success active" id="btn-exam">Exam</button>
+        <button class="btn btn-warning" id="btn-generation">Generation</button>
+      </div>
+    </div>
+
+    <table id="leaderboard" class="table table-striped">
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Score (%)</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+      </tbody>
+    </table>
+
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  
+  <script>
+
+  // 定义CSV文件URL
+  const csvUrls = {
+    exam: 'https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/exam_LEval_leaderboard.csv',
+    generation: 'https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/ngram_LEval_leaderboard.csv',  
+    gpt4: 'https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/gpt-lm_LEval_leaderboard.csv',
+    claude: 'https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/vsClaude_LEval_leaderboard.csv'
+  }  
+
+  // 当前显示的CSV
+  let currentCsv = csvUrls.exam;
+
+  // 加载CSV数据
+  function loadCsv(url) {
+    Papa.parse(url, {
+      download: true, 
+      header: true,
+      complete: renderTable 
+    })
+  }
+
+  // 渲染表格
+  function renderTable(results) {
+
+    $("#leaderboard tbody").empty();
+
+    results.data.forEach(row => {
+      $("#leaderboard tbody").append(`
+        <tr>
+          <td>${row.Model}</td>
+          <td>${row.Score}</td>
+        </tr>
+      `);
+    })
+  }
+
+  // 初始化加载exam CSV
+  loadCsv(csvUrls.exam);
+
+  // exam按钮点击事件
+  $("#btn-exam").click(() => {
+    currentCsv = csvUrls.exam;
+    loadCsv(currentCsv);
+  })  
+
+  // generation按钮点击事件
+  $("#btn-generation").click(() => {
+    currentCsv = csvUrls.generation;
+    loadCsv(currentCsv);
+  })
+
+  // objective按钮点击事件
+  $("#btn-objective").click(() => {
+    
+    $("#btn-exam").show();
+    $("#btn-generation").show();
+
+    if (currentCsv == csvUrls.gpt4 || currentCsv == csvUrls.claude) {
+      loadCsv(csvUrls.exam);
+    }
+  })
+
+  // pairwise按钮点击事件
+  $("#btn-pairwise").click(() => {
+    
+    $("#btn-exam").hide();
+    $("#btn-generation").hide();
+
+    loadCsv(csvUrls.gpt4);
+  })
+
+  </script>
+
+</body>
+</html>
