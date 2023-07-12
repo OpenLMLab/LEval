@@ -5,12 +5,14 @@
 ------
 ### *LEval: Long Context Models Evaluation in the Era of LLM*
 
-LEval (preview on [🤗 HuggingFace Datasets](https://huggingface.co/datasets/L4NLP/LEval)) is a comprehensive Long-range language models evaluation suite with 18 long document tasks across multiple domains that require reasoning over long texts, including summarization, question answering, in-context learning with long CoT examples, topic retrieval, and paper writing assistance. LEval is a high-quality test set with 411 long documents and 2043 query-response pairs. All samples in LEval have been manually annotated and checked by the authors. 
+LEval (preview on [🤗 HuggingFace Datasets](https://huggingface.co/datasets/L4NLP/LEval)) is a comprehensive long-range language models evaluation suite with 18 long document tasks across multiple domains that require reasoning over long texts, including summarization, question answering, in-context learning with long CoT examples, topic retrieval, and paper writing assistance. LEval is a high-quality test set with 411 long documents and 2043 query-response pairs. All samples in LEval have been manually annotated and checked by the authors. 
 There have been many studies exploring the expansion of context length in large models. However, it remains to be explored whether these methods perform well enough in downstream tasks and whether they can surpass previous methods based on retrieval or chunking.  
 
 We hope LEval could help researchers and developers track the progress of long-range language models (LRLMs) and understand the strengths/shortcomings of different methods.
 
 [Why we build LEval and the details of these tasks](#why)
+
+[View the results](https://github.com/OpenLMLab/LEval/tree/main/Leaderboard)
 
 [How to download](#use)
 
@@ -73,7 +75,7 @@ Each long document has multiple queries and corresponding responses. The format 
     "outputs": ["C","A", "..."], // the ground truth or reference of corresponding instructions
     "input": "A very long document", // LLMs need to respond to instructions based on this long document.
     "source": "domain the document belongs to", // meeting, narrative_qa, etc.
-    "evaluation": "Metrics used for evaluation" // e.g., exam, huamn, LLM, ROUGE, F1, etc.
+    "evaluation": "Metrics used for evaluation" // e.g., exam, human, LLM, ROUGE, F1, etc.
 }
 ```
 
