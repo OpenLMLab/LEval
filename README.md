@@ -205,6 +205,8 @@ We will randomly verify some results with the submitted output files.
 ## Evaluate Popular Models
 We have conducted inference and obtained results for `gpt-3.5-turbo-16k-0613` and `gpt-3.5-turbo-0613` (4k context length), using a retrieve-augmented strategy that utilizes dense retrieval with powerful OpenAI AdaEmbedding as the vector representation. As we can see from the leaderboard, retrieve-based approaches generally yield better outcomes for tasks that have readily retrievable answers. We noticed that in tasks where `retrieve-turbo-4k` outperforms `turbo-16k`, the primary factor is that `turbo-4k` excels at following instructions. As a result, it can take the advantages of n-gram evaluation metrics. However, even for these tasks, there are instances where the predicted answer might be *"I don't know"* or *"not mentioned"* due to the quality of the retrieval process. Retrieval methods demonstrate comparatively less satisfactory performance for tasks like summarization or topic retrieval.
 
+Noted that we do not conduct prompt engineering when testing, and just use some simple and straight-forward prompts.
+
 We will also test the following open-sourced long-range models:
 
 - [ ] XGen-8k-7b
