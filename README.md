@@ -112,8 +112,8 @@ we use the following metrics to evaluate the performance of generation tasks:
 We filter **17 long documents with 96 questions** for GPT4 evaluation considering the cost. 
 - *Turbo3.5 Evaluation (not suggested)*, `"evaluation": "LLM"` and  `"evaluation": "human"`: The evaluation step is similar to GPT4 evaluation which is cheaper but **not accurate**. It serves as an alternative for researchers who do not have access to the GPT-4 API. Samples used in Turbo3.5 Evaluation are from the GPT4 evaluation set and the Human Evaluation set which has **29 long documents with 181 questions**.
 
-`Notice`: The n-gram matching metrics like f1 are very sensitive to the *length* of ground truth (length bias). In our preliminary experiments, the turbo-16k model achieve very poor score on f1 score. We found that it always generates a lengthy answer with an explanation which decreases the f1 score. 
-To reduce the length bias for ngram metrics, we suggest adding the length instruction (e.g., please answer with 10 words) while testing ngram metrics: *rouge* and *f1* (for other metrics, we should NOT disclose any information about the ground truth).
+`Notice`: The n-gram matching metrics like f1 are very sensitive to the *length* of ground truth (length bias). In our preliminary experiments, the turbo-16k model achieved very poor score on f1 score because it usually generates a very lengthy answer with an explanation which decreases the f1 score. 
+To reduce the length bias, we suggest adding the length instruction (e.g., please answer with 10 words) while testing ngram metrics: *rouge* and *f1* (for other metrics, we should NOT disclose any information about the ground truth).
 
 ### Evaluation Scripts
 <a name="eval"></a>
@@ -127,7 +127,7 @@ More Explanation of the parameters can be found in the python script.
 ```
 python Evaluation/llm_eval.py --pred_path /path/to/<your model>.pred.jsonl  --judge_model gpt-4 (or gpt-3.5-turbo) --battle_with turbo-16k-0613 (or claude-100k)
 ```
-where `--pred_path` means the prediction file. Example prediction file of `Claude-100k (vs turbo-16k)` are available: [for gpt4 evaluation](https://github.com/OpenLMLab/LEval/tree/main/Predictions/llm_gpt4_eval/claude-100k.pred.jsonl) and [for turbo3.5 evaluation](https://github.com/OpenLMLab/LEval/tree/main/Predictions/llm_turbo_eval/claude-100k.pred.jsonl)
+where `--pred_path` means the prediction file. Example prediction files of `Claude-100k (vs turbo-16k)` are available: [for gpt4 evaluation](https://github.com/OpenLMLab/LEval/tree/main/Predictions/llm_gpt4_eval/claude-100k.pred.jsonl) and [for turbo3.5 evaluation](https://github.com/OpenLMLab/LEval/tree/main/Predictions/llm_turbo_eval/claude-100k.pred.jsonl)
 
 - For human evaluation, we provide a very easy-to-use flask web app running on `localhost 127.0.0.1:5000`. You need to copy all the prediction files `<model_name>.pred.jsonl` (samples with `evaluation: human`) to the `Predictions/human_eval` folder and then run:
 ```
