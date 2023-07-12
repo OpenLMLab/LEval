@@ -53,8 +53,8 @@ def main():
             outputs = d['outputs']
             
             if args.gsm:
-                document = "\nQuestion: ".join(instructions.split("\nQuestion: ")[:-1])
-                instructions = "Question: " + instructions.split("\nQuestion: ")[-1]
+                document = "\nQuestion: ".join(instructions[0].split("\nQuestion: ")[:-1])
+                instructions = ["Question: " + instructions[0].split("\nQuestion: ")[-1]]
             with open(f"./tmp/tmp_doc_{os.path.split(file_name)[-1].split('.')[0]}_{i}.txt", 'w', encoding='utf-8') as f_tmp:
                 f_tmp.write(document)
 

@@ -37,7 +37,7 @@ The repository is structured as follows:
 ├── Predictions/ # output of models
 │   ├── exam_eval/trubo-16k-0613
 │   │              ├── <task_name>.pred.jsonl
-    │              └── ... 
+│   │              └── ... 
 │   ├── llm_gpt4_eval  
 │   │             ├──<model_name>.pred.jsonl
 │   ├── ...
@@ -203,7 +203,7 @@ We will randomly verify some results with the submitted output files.
     - `win % vs claude100k`([vsClaude_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/vsClaude_LEval_leaderboard.csv)) The win rate of your model in the battle with `Claude-100k`
 
 ## Evaluate Popular Models
-We have conducted inference and obtained results for `gpt-3.5-turbo-16k-0613` and `gpt-3.5-turbo-0613` (4k context length), using a retrieve-augmented strategy that utilizes dense retrieval with powerful OpenAI AdaEmbedding as the vector representation. As we can see from the leaderboard, retrieve-based approaches generally yield better outcomes for tasks that have readily retrievable answers. However, even for these tasks, there are instances where the predicted answer might be *"I don't know"* or *"not mentioned"* due to the quality of the retrieval process. Retrieval methods demonstrate comparatively less satisfactory performance for tasks like summarization or topic retrieval.
+We have conducted inference and obtained results for `gpt-3.5-turbo-16k-0613` and `gpt-3.5-turbo-0613` (4k context length), using a retrieve-augmented strategy that utilizes dense retrieval with powerful OpenAI AdaEmbedding as the vector representation. As we can see from the leaderboard, retrieve-based approaches generally yield better outcomes for tasks that have readily retrievable answers. We noticed that in tasks where `retrieve-turbo-4k` outperforms `turbo-16k`, the primary factor is that `turbo-4k` excels at following instructions. As a result, it can take the advantages of n-gram evaluation metrics. However, even for these tasks, there are instances where the predicted answer might be *"I don't know"* or *"not mentioned"* due to the quality of the retrieval process. Retrieval methods demonstrate comparatively less satisfactory performance for tasks like summarization or topic retrieval.
 
 We will also test the following open-sourced long-range models:
 
@@ -218,10 +218,11 @@ We are also interested results of `Claude-100k` and `gpt4-32k` on the Exam group
 
 ## Other Tools
 ### Scripts to generate the output of turbo-16k-0613
-You can use the scripts in `Tools` to reproduce the output of results run by us. An example of reproducing the output of turbo-16k-0613 is as follows:
+You can use the scripts in `Tools` to reproduce the output of results run by us. An example of reproducing the output of `turbo-16k-0613` is as follows:
 ```
 python Tools/turbo16k_api_call.py --metric exam_eval (or ngram_eval, human_eval, llm_turbo_eval, llm_gpt4_eval)
 ```
+We also implement the retrieval-based method using [langchain](https://github.com/hwchase17/langchain).
 
 ### A flask-based annotation website for jsonl files
 We have also released a very easy-to-use annotation website for LEval. To run this script, you should install flask. The script is used to view and annotate local jsonl files.

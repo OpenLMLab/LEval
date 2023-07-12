@@ -1,2 +1,3 @@
 ﻿Model,coursera,gsm100,quality,topic_retrieval,tpo,Avg,Chunking,Retrieval,In-domain data,In-context examples,Context length
-turbo-16k-0613,58.87,85,63.37,69.33,69.89,0,no,no,no,0,16k
+turbo-16k-0613,58.87,85,63.37,69.33,69.89,69.29,no,no,no,0,16k
+retrieval-turbo-0613,52.47,29,55.57,11.33,75.56,44.79,no,yes,no,0,4k
