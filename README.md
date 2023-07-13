@@ -5,10 +5,10 @@
 ------
 ### *LEval: Long Context Models Evaluation in the Era of LLM*
 
-LEval (preview on [🤗 HuggingFace Datasets](https://huggingface.co/datasets/L4NLP/LEval)) is a comprehensive long-range language models evaluation suite with 18 long document tasks across multiple domains that require reasoning over long texts, including summarization, question answering, in-context learning with long CoT examples, topic retrieval, and paper writing assistance. LEval is a high-quality test set with 411 long documents and 2043 query-response pairs. All samples in LEval have been manually annotated and checked by the authors. 
+LEval (preview on [🤗 HuggingFace Datasets](https://huggingface.co/datasets/L4NLP/LEval)) is a comprehensive long-context language models evaluation suite with 18 long document tasks across multiple domains that require reasoning over long texts, including summarization, question answering, in-context learning with long CoT examples, topic retrieval, and paper writing assistance. LEval is a high-quality test set with 411 long documents and 2043 query-response pairs. All samples in LEval have been manually annotated and checked by the authors. 
 There have been many studies exploring the expansion of context length in large models. However, it remains to be explored whether these methods perform well enough in downstream tasks and whether they can surpass previous methods based on retrieval or chunking.  
 
-We hope LEval could help researchers and developers track the progress of long-range language models (LRLMs) and understand the strengths/shortcomings of different methods.
+We hope LEval could help researchers and developers track the progress of long-context language models (LCLMs) and understand the strengths/shortcomings of different methods.
 
 [Why we build LEval and the details of these tasks](#why)
 
@@ -81,11 +81,11 @@ Each long document has multiple queries and corresponding responses. The format 
 
 <a name="why"></a>
 ## Why LEval
-With the support of GPT-4 and Claude for longer context inputs (e.g. 32k or 100k), an increasing number of researchers are exploring the long-range modeling capabilities of language models, including training new long-range language models (LRLMs) from scratch or extending existing LLMs to longer context windows. 
+With the support of GPT-4 and Claude for longer context inputs (e.g. 32k or 100k), an increasing number of researchers are exploring the long-context modeling capabilities of language models, including training new long-context language models (LRLMs) from scratch or extending existing LLMs to longer context windows. 
 
 Recent work has remarkably improved the performance of open-source large language models on datasets like MMLU, CEval, GSM8K, and BBH. Unfortunately, achieving good performance on longer contexts like GPT-4 and Claude still poses a significant challenge. We also found that fine-tuning the model on long sequences (16k or 32k) seems to be helpful for extending dialogue history (e.g.: ChatGLM2 and LongChat). However, the task of reasoning over lengthy documents through multiple rounds of queries remains challenging, especially considering not using retrieval-based approaches.
 
-We have noticed a lack of a good benchmark for evaluating LLMs' long-range modeling abilities. Therefore, we have collected zero-shot test samples in various tasks and domains to construct **LEval** benchmark. Our work aims to encourage the open-source community to explore better long-range language models.
+We have noticed a lack of a good benchmark for evaluating LLMs' long-context modeling abilities. Therefore, we have collected zero-shot test samples in various tasks and domains to construct **LEval** benchmark. Our work aims to encourage the open-source community to explore better long-context language models.
 
 <a name="eval"></a>
 ## How to Evaluate on LEval
@@ -108,7 +108,7 @@ LEval does not only contain exact-match style (e.g.: multiple choice) samples co
 - Writing Assistance (Assist in writing part of the long document). Example predicted answer: `2 Related Work\n Recent study has shown that ...`
 
 we use the following metrics to evaluate the performance of generation tasks:
-- *N-gram Matching Evaluation*,  `"evaluation": "f1" or "rouge"`: Using traditional automatic metrics like F1, ROUGE, BERTScore, etc. The low cost of automatic metrics makes it possible to evaluate all samples in LEval. However, considering the problem with these lexical matching metrics,  when the performance gap is not significant, it is hard to tell which model is better. Therefore, we also use human evaluation and Evaluation with LLM.
+- *N-gram Match Evaluation*,  `"evaluation": "f1" or "rouge"`: Using traditional automatic metrics like F1, ROUGE, BERTScore, etc. The low cost of automatic metrics makes it possible to evaluate all samples in LEval. However, considering the problem with these lexical matching metrics,  when the performance gap is not significant, it is hard to tell which model is better. Therefore, we also use human evaluation and Evaluation with LLM.
 - *Human Evaluation*, ` "evaluation": "human"`: The annotators are asked to give a score from `1` to `5`, where 1 means the output is very bad and 5 means the output is very good. We filter **12 long documents with 85 questions** for human evaluation, each of which has 3 references: [human annotated output, GPT4-32k output, and Claude-100k output]([https://github.com/OpenLMLab/LEval/blob/main/Predictions/human_eval](https://github.com/OpenLMLab/LEval/blob/main/Predictions/human_eval/claude.gpt4.ref.jsonl)). During human evaluation, researchers can also understand the performance gap with SOTA LRLMs. You can also use the `python web_for_human_eval.py` website for the human evaluation process.
 - *GPT4 Evaluation*, `"evaluation": "LLM"`: We suggest battling with `turbo-16k-0613` and reporting `Win % vs turbo-16k-0613`. If your model is powerful enough, we suggest directly comparing with `Claude-100k`, and reporting `Win % vs Claude-100k`.
 We filter **17 long documents with 96 questions** for GPT4 evaluation considering the cost. 
@@ -207,7 +207,7 @@ We have conducted inference and obtained results for `gpt-3.5-turbo-16k-0613` an
 
 Noted that we do not conduct prompt engineering when testing, and just use some simple and straight-forward prompts.
 
-We will also test the following open-sourced long-range models:
+We will also test the following open-sourced long-context models:
 
 - [ ] XGen-8k-7b
 - [ ] LongChat-16k-7b
