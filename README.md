@@ -231,7 +231,7 @@ We also implement the retrieval-based method using [langchain](https://github.co
 We have also released a very easy-to-use annotation website for LEval. To run this script, you should install flask. The script is used to view and annotate local jsonl files.
 Start running the website on `127.0.0.1:5000` by:
 ```
-python Tools/jsonl_annotation_helper.py --path LEval-data/Generation/meeting_summ.jsonl --mode begin --new_pairs_num 1
+python Tools/web_annotate_jsonl.py --path LEval-data/Generation/meeting_summ.jsonl --mode begin --new_pairs_num 1
 ```
 where `--new_pairs_num` means the number of new QA pairs you want to add and `--mode` (begin or continue) means whether you want to continue from previous annotation results. 
 The input file denoted by `--path` should be a `jsonl` file like the examples in `LEval-data` folder. 
