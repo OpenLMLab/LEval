@@ -142,29 +142,29 @@ See the running screenshot [here](#human_demo)
 ### Statistics of LEval
 LEval contains 411 long documents and 2043 instruction-response pairs, with input long documents in an average of 7217 words. The detailed statistics are listed in the following table. We list the average length of words, while the corresponding number of tokens should be 1.5x longer according to experience.
 #### Exact match (195 docs and 893 questions)
-| data-name               | source | task | # samples |# instructions | avg-doc-len | avg-instruct-len |
+| data-name               | source |  task-style | # samples |# instructions | avg-doc-len | avg-instruct-len |
 | ------------------- | :-- | :------------ | :--------: | :---:  | :---: | :-----: |
 | coursera               | [Coursera website](https://www.coursera.org/) with human labeled QA pairs |     multiple-choice question               |  15  |  172  | 6950 | 52 |
 | gsm100             | [100 math problems from GSM8k with 16 examples](https://github.com/openai/grade-school-math)    |  many-shot in-context learning  | 100  |   100  |   0  | 3335 |
 | quality                | [QA on Gutenberg stories from QuALITY](https://github.com/nyu-mll/quality)  |     multiple-choice question  |  15  |  202  | 4161 | 58 |
-| topic_retrieval | [LongChat](https://github.com/DachengLi1/LongChat) with enhanced questions   |get initial topics from lengthy chat history |  50  |  150  | 8843 | 17 |
+| topic_retrieval | [LongChat](https://github.com/DachengLi1/LongChat) with enhanced questions   | retrieving topics from lengthy chat history |  50  |  150  | 8843 | 17 |
 | tpo                    | [TOEFL Practice Online from TOEFL-QA](https://github.com/iamyuanchung/TOEFL-QA/tree/master)   |     multiple-choice question    |  15  |  269  | 2986 | 53 |
 
 #### Generation (216 docs and 1150 questions)
-| data-name               | source | task | # samples |# instructions | avg-doc-len |
+| data-name               | source | task-style | # samples |# instructions | avg-doc-len |
 | ------------------- | :-- | :------------ | :--------: |:--------: | :---: |
-| financial_qa        | Earnings call transcripts from Company's Investor Relations Website|  question-answering  |  6  | 52  | 4000 | 
+| financial_qa        | Earnings call transcripts from Company's Investor Relations Website|  multiple QAs  |  6  | 52  | 4000 | 
 | gov_report_summ     | [Summary of government Report](https://gov-report-data.github.io/)   |   summarization      |  13 | 13  | 4420 | 7  |
-| legal_contract_qa   | [Legal contract understanding from cuad](https://github.com/TheAtticusProject/cuad) |  question-answering  |  20 | 130 | 18115|
-| meeting_summ        | [Query-based meeting summarization from qmsum](https://github.com/Yale-LILY/QMSum)   |    summarization     |  20 | 156  | 11441| 
-| multidoc_qa         |  [QA on multiple long documents from Multidoc2dial](https://doc2dial.github.io/multidoc2dial) |  question-answering  |  20 |136  | 2802 |
-| narrative_qa        |  [QA on Gutenberg stories from narrativeQA](https://github.com/deepmind/narrativeqa) |  question-answering  |  20 | 182  | 32805|
-| natural_question    |  [Merged NQ data](https://github.com/google-research-datasets/natural-questions) |  question-answering  |  20 | 104  | 13245|
+| legal_contract_qa   | [Legal contract understanding from cuad](https://github.com/TheAtticusProject/cuad) |  multiple QAs  |  20 | 130 | 18115|
+| meeting_summ        | [Query-based meeting summarization from qmsum](https://github.com/Yale-LILY/QMSum)   |  query-based summarization     |  20 | 156  | 11441| 
+| multidoc_qa         |  [QA on multiple long documents from Multidoc2dial](https://doc2dial.github.io/multidoc2dial) |  multiple QAs  |  20 |136  | 2802 |
+| narrative_qa        |  [QA on Gutenberg stories from narrativeQA](https://github.com/deepmind/narrativeqa) |  multiple QAs  |  20 | 182  | 32805|
+| natural_question    |  [Merged NQ data](https://github.com/google-research-datasets/natural-questions) |  multiple QAs  |  20 | 104  | 13245|
 | news_summ           |  [News summarization from multi-news](https://github.com/Alex-Fabbri/Multi-News) |    summarization     |  11 | 11  | 4658 |
-| paper_assistant     |  [Papers and reviews from openreview](https://github.com/neulab/ReviewAdvisor) |    writing assistant |  20 | 60  | 6145 |
+| paper_assistant     |  [Papers and reviews from openreview](https://github.com/neulab/ReviewAdvisor) |   Completing and reviewing papers |  20 | 60  | 6145 |
 | patent_summ         |  [Summary of patents from bigpatent](https://evasharma.github.io/bigpatent/)  |    summarization     |  13 | 13  |4025 |
-| review_summ         |  [Hotel reviews from SPACE](https://github.com/stangelid/qt)  |    summarization     |  20 | 120  | 14789|
-| scientific_qa       |  [QA on academic papers from Qasper](https://github.com/allenai/qasper-led-baseline)     |  question-answering  | 20 | 160  | 3238 | 
+| review_summ         |  [Hotel reviews from SPACE](https://github.com/stangelid/qt)  |    query-based summarization   |  20 | 120  | 14789|
+| scientific_qa       |  [QA on academic papers from Qasper](https://github.com/allenai/qasper-led-baseline)   |  multiple QAs  | 20 | 160  | 3238 | 
 | tv_show_summ        |  [Summary of TV shows from SummScreen](https://github.com/mingdachen/SummScreen) |  summarization   |  13 | 13  | 5834 |
 
 For generation tasks, the average word length of reference is 95.
