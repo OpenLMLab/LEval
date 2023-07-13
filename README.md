@@ -187,16 +187,17 @@ We will randomly verify some results with the submitted output files.
 #### Explanation of keys in the leaderboard
 
 1. Keys in [exam_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/exam_LEval_leaderboard.csv)
+    -  `Avg`:  averaging over each dataset’s overall performance score.
     - `Chunking`: whether splitting the long document into smaller chunks.
     - `Retrieval`: whether using retrieval
     -  `In-domain data`: whether incorporating in-domain data (e.g.  meetings in qmsum, stories from narrative_qa) into finetuning.
     -  `In-context examples`: number of additional in-context examples.
     -  `Context length`: the context length of your base model.
-    -  `Avg`:  averaging over each dataset’s overall performance score.
-2. Keys in [ngram_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/ngram_LEval_leaderboard.csv)
+    -  `Multi-turn Dial`: whether supporting multiple rounds of dialogue.
+3. Keys in [ngram_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/ngram_LEval_leaderboard.csv)
     -  `F1 avg`:  the average over each dataset’s overall F1 score on QA-style tasks
     -  `ROUGE avg`: the average over each dataset’s overall ROUGE score on Summarization-style tasks. The ROUGE score is calculated by the geometric mean of `ROUGE-1`, `ROUGE-2` and `ROUGE-L`
-3. Keys in [llm_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/llm_LEval_leaderboard.csv).
+4. Keys in [llm_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/llm_LEval_leaderboard.csv).
     - `n_wins`: number of wins including results of swapping the position of two answers.
     - `n_draws` number of draws including results of swapping the position of two answers.
     - `win % vs turbo16k` The win rate of your model in the battle with `turbo-16k-0613`
