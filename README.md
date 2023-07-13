@@ -142,7 +142,7 @@ See the running screenshot [here](#human_demo)
 ### Statistics of LEval
 LEval contains 411 long documents and 2043 instruction-response pairs, with input long documents in an average of 7217 words. The detailed statistics are listed in the following table. We list the average length of words, while the corresponding number of tokens should be 1.5x longer according to experience.
 #### Exact match (195 docs and 893 questions)
-| data-name               | source |  task-style | # samples |# instructions | avg-doc-len | avg-instruct-len |
+| data-name               | source |  Instruct-style | # samples |# instructions | avg-doc-len | avg-instruct-len |
 | ------------------- | :-- | :------------ | :--------: | :---:  | :---: | :-----: |
 | coursera               | [Coursera website](https://www.coursera.org/) with human labeled QA pairs |     multiple-choice question               |  15  |  172  | 6950 | 52 |
 | gsm100             | [100 math problems from GSM8k with 16 examples](https://github.com/openai/grade-school-math)    |  many-shot in-context learning  | 100  |   100  |   0  | 3335 |
@@ -151,7 +151,7 @@ LEval contains 411 long documents and 2043 instruction-response pairs, with inpu
 | tpo                    | [TOEFL Practice Online from TOEFL-QA](https://github.com/iamyuanchung/TOEFL-QA/tree/master)   |     multiple-choice question    |  15  |  269  | 2986 | 53 |
 
 #### Generation (216 docs and 1150 questions)
-| data-name               | source | task-style | # samples |# instructions | avg-doc-len |
+| data-name               | source | Instruct-style | # samples |# instructions | avg-doc-len |
 | ------------------- | :-- | :------------ | :--------: |:--------: | :---: |
 | financial_qa        | Earnings call transcripts from Company's Investor Relations Website|  multiple QAs  |  6  | 52  | 4000 | 
 | gov_report_summ     | [Summary of government Report](https://gov-report-data.github.io/)   |   summarization      |  13 | 13  | 4420 | 7  |
