@@ -153,18 +153,18 @@ LEval contains 411 long documents and 2043 instruction-response pairs, with inpu
 #### Generation (216 docs and 1150 questions)
 | data-name               | source | Instruct-style | # samples |# instructions | avg-doc-len |
 | ------------------- | :-- | :------------ | :--------: |:--------: | :---: |
-| financial_qa        | Earnings call transcripts from Company's Investor Relations Website|  multiple QAs  |  6  | 52  | 4000 | 
+| financial_qa        | Earnings call transcripts from Company's Investor Relations Website|  abstractive QA  |  6  | 52  | 4000 | 
 | gov_report_summ     | [Summary of government Report](https://gov-report-data.github.io/)   |   summarization      |  13 | 13  | 4420 | 7  |
-| legal_contract_qa   | [Legal contract understanding from cuad](https://github.com/TheAtticusProject/cuad) |  multiple QAs  |  20 | 130 | 18115|
+| legal_contract_qa   | [Legal contract understanding from cuad](https://github.com/TheAtticusProject/cuad) |  abstractive QA |  20 | 130 | 18115|
 | meeting_summ        | [Query-based meeting summarization from qmsum](https://github.com/Yale-LILY/QMSum)   |  query-based summarization     |  20 | 156  | 11441| 
-| multidoc_qa         |  [QA on multiple long documents from Multidoc2dial](https://doc2dial.github.io/multidoc2dial) |  multiple QAs  |  20 |136  | 2802 |
-| narrative_qa        |  [QA on Gutenberg stories from narrativeQA](https://github.com/deepmind/narrativeqa) |  multiple QAs  |  20 | 182  | 32805|
-| natural_question    |  [Merged NQ data](https://github.com/google-research-datasets/natural-questions) |  multiple QAs  |  20 | 104  | 13245|
+| multidoc_qa         |  [QA on multiple long documents from Multidoc2dial](https://doc2dial.github.io/multidoc2dial) |  abstractive QA  |  20 |136  | 2802 |
+| narrative_qa        |  [QA on Gutenberg stories from narrativeQA](https://github.com/deepmind/narrativeqa) |  abstractive QA  |  20 | 182  | 32805|
+| natural_question    |  [Merged NQ data](https://github.com/google-research-datasets/natural-questions) |  abstractive QA  |  20 | 104  | 13245|
 | news_summ           |  [News summarization from multi-news](https://github.com/Alex-Fabbri/Multi-News) |    summarization     |  11 | 11  | 4658 |
-| paper_assistant     |  [Papers and reviews from openreview](https://github.com/neulab/ReviewAdvisor) |   Completing and reviewing papers |  20 | 60  | 6145 |
+| paper_assistant     |  [Papers and reviews from openreview](https://github.com/neulab/ReviewAdvisor) |   completing and reviewing papers |  20 | 60  | 6145 |
 | patent_summ         |  [Summary of patents from bigpatent](https://evasharma.github.io/bigpatent/)  |    summarization     |  13 | 13  |4025 |
 | review_summ         |  [Hotel reviews from SPACE](https://github.com/stangelid/qt)  |    query-based summarization   |  20 | 120  | 14789|
-| scientific_qa       |  [QA on academic papers from Qasper](https://github.com/allenai/qasper-led-baseline)   |  multiple QAs  | 20 | 160  | 3238 | 
+| scientific_qa       |  [QA on academic papers from Qasper](https://github.com/allenai/qasper-led-baseline)   | abstractive QA  | 20 | 160  | 3238 | 
 | tv_show_summ        |  [Summary of TV shows from SummScreen](https://github.com/mingdachen/SummScreen) |  summarization   |  13 | 13  | 5834 |
 
 For generation tasks, the average word length of reference is 95.
