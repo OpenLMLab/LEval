@@ -66,8 +66,6 @@ git clone https://github.com/OpenLMLab/LEval.git
 ```
 The test data is in `LEval-data`.
 
-*Format of Each Sample*
-
 Each long document has multiple queries and corresponding responses. The format of each sample is as follows:
 ```json
 {
