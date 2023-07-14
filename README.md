@@ -10,15 +10,15 @@ There have been many studies exploring the expansion of context length in large 
 
 We hope LEval could help researchers and developers track the progress of long-context language models (LCLMs) and understand the strengths/shortcomings of different methods.
 
-📜[Why we build LEval and the details of these tasks](#why)
+📜 [Why we build LEval and the details of these tasks](#why)
 
-🔍[View the results](https://github.com/OpenLMLab/LEval/tree/main/Leaderboard)
+🔍 [View the results](https://github.com/OpenLMLab/LEval/tree/main/Leaderboard)
 
-⬇️[How to download](#use)
+⬇️ [How to download](#use)
 
-✅[How to evaluate](#eval)
+✅ [How to evaluate](#eval)
 
-📝[How to submit](#submit)
+📝 [How to submit](#submit)
 
 
 ## Folders
@@ -170,9 +170,9 @@ The URLs denote where we collect the initial version of LEval and **detailed dat
 
 <a name="submit"></a>
 ## How to Submit
-The leaderboard contains 5 `csv` files: [exam_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/exam_LEval_leaderboard.csv), 
-[f1_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/f1_LEval_leaderboard.csv),[rouge_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/rouge_LEval_leaderboard.csv),
-[llm_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/llm_LEval_leaderboard.csv) and  [vsClaude_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/vsClaude_LEval_leaderboard.csv).
+The leaderboard contains 5 `csv` files: [exam](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/exam_LEval_leaderboard.csv), 
+[f1](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/f1_LEval_leaderboard.csv),[rouge_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/rouge_LEval_leaderboard.csv),
+[vsTurbo_llm](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/llm_LEval_leaderboard.csv) and  [vsClaude_llm](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/vsClaude_LEval_leaderboard.csv).
 
 To submit your results on our leaderboard, you can send an email to `levalbenchmark@gmail.com`
 #### Your submission should include 4 things:
