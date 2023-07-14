@@ -3,14 +3,14 @@
 </div>
 
 ------
-### *LEval: A Long Context Models Evaluation Benchmark in the Era of LLM*
+### *L-Eval: Instituting Standardized Evaluation for Long Context Language Models*
 
-LEval (preview on [🤗 HuggingFace Datasets](https://huggingface.co/datasets/L4NLP/LEval)) is a comprehensive long-context language models evaluation suite with 18 long document tasks across multiple domains that require reasoning over long texts, including summarization, question answering, in-context learning with long CoT examples, topic retrieval, and paper writing assistance. LEval is a high-quality test set with 411 long documents and 2043 query-response pairs. All samples in LEval have been manually annotated and checked by the authors. 
+L-Eval (preview on [🤗 HuggingFace Datasets](https://huggingface.co/datasets/L4NLP/LEval)) is a comprehensive long-context language models evaluation suite with 18 long document tasks across multiple domains that require reasoning over long texts, including summarization, question answering, in-context learning with long CoT examples, topic retrieval, and paper writing assistance. L-Eval is a high-quality test set with 411 long documents and 2043 query-response pairs. All samples in L-Eval have been manually annotated and checked by the authors. 
 There have been many studies exploring the expansion of context length in large models. However, it remains to be explored whether these methods perform well enough in downstream tasks and whether they can surpass previous methods based on retrieval or chunking.  
 
-We hope LEval could help researchers and developers track the progress of long-context language models (LCLMs) and understand the strengths/shortcomings of different methods.
+We hope L-Eval could help researchers and developers track the progress of long-context language models (LCLMs) and understand the strengths/shortcomings of different methods.
 
-📜 [Why we build LEval and the details of these tasks](#why)
+📜 [Why we build L-Eval and the details of these tasks](#why)
 
 🔍 [View the results](https://github.com/OpenLMLab/LEval/tree/main/Leaderboard)
 
@@ -78,19 +78,19 @@ Each long document has multiple queries and corresponding responses. The format 
 ```
 
 <a name="why"></a>
-## Why LEval
+## Why L-Eval
 With the support of GPT-4 and Claude for longer context inputs (e.g. 32k or 100k), an increasing number of researchers are exploring the long-context modeling capabilities of language models, including training new long-context language models (LCLMs) from scratch or extending existing LLMs to longer context windows. 
 
 Recent work has remarkably improved the performance of open-source large language models on datasets like MMLU, CEval, GSM8K, and BBH. Unfortunately, achieving good performance on longer contexts like GPT-4 and Claude still poses a significant challenge. We also found that fine-tuning the model on long sequences (16k or 32k) seems to be helpful for extending dialogue history (e.g.: ChatGLM2 and LongChat). However, the task of reasoning over lengthy documents through multiple rounds of queries remains challenging, especially considering not using retrieval-based approaches.
 
-We have noticed a lack of a good benchmark for evaluating LLMs' long-context modeling abilities. Therefore, we have collected zero-shot test samples in various tasks and domains to construct **LEval** benchmark. Our work aims to encourage the open-source community to explore better long-context language models.
+We have noticed a lack of a good benchmark for evaluating LLMs' long-context modeling abilities. Therefore, we have collected zero-shot test samples in various tasks and domains to construct **L-Eval** benchmark. Our work aims to encourage the open-source community to explore better long-context language models.
 
 <a name="eval"></a>
-## How to Evaluate on LEval
+## How to Evaluate on L-Eval
 In this part, we explain the metrics we used and how to run the evaluation scripts.
 
-### Metrics used in LEval
-LEval does not only contain exact-match style (e.g.: multiple choice) samples considering that in real-world applications, the generated answer may not be exactly the same as the reference for long documents tasks. LEval is mainly divided into **two groups**: `Exam` and `Generation` and we use different evaluation metrics for each group.
+### Metrics used in L-Eval
+L-Eval does not only contain exact-match style (e.g.: multiple choice) samples considering that in real-world applications, the generated answer may not be exactly the same as the reference for long documents tasks. L-Eval is mainly divided into **two groups**: `Exam` and `Generation` and we use different evaluation metrics for each group.
 #### Exact match 
   - Multiple Choice Question (single correct option). Example predicted answer: `A`
   - Multiple-Answer Questions (multiple correct options). Example predicted answer: `BCD`
@@ -106,7 +106,7 @@ LEval does not only contain exact-match style (e.g.: multiple choice) samples co
 - Writing Assistance (Assist in writing part of the long document). Example predicted answer: `2 Related Work\n Recent study has shown that ...`
 
 we use the following metrics to evaluate the performance of generation tasks:
-- *N-gram Match Evaluation*,  `"evaluation": "f1" or "rouge"`: Using traditional automatic metrics like F1, ROUGE, BERTScore, etc. The low cost of automatic metrics makes it possible to evaluate all samples in LEval. However, considering the problem with these lexical matching metrics,  when the performance gap is not significant, it is hard to tell which model is better. Therefore, we also use human evaluation and Evaluation with LLM.
+- *N-gram Match Evaluation*,  `"evaluation": "f1" or "rouge"`: Using traditional automatic metrics like F1, ROUGE, BERTScore, etc. The low cost of automatic metrics makes it possible to evaluate all samples in L-Eval. However, considering the problem with these lexical matching metrics,  when the performance gap is not significant, it is hard to tell which model is better. Therefore, we also use human evaluation and Evaluation with LLM.
 - *Human Evaluation*, ` "evaluation": "human"`: The annotators are asked to give a score from `1` to `5`, where 1 means the output is very bad and 5 means the output is very good. We filter **12 long documents with 85 questions** for human evaluation, each of which has 3 references: [human annotated output, GPT4-32k output, and Claude-100k output]([https://github.com/OpenLMLab/LEval/blob/main/Predictions/human_eval](https://github.com/OpenLMLab/LEval/blob/main/Predictions/human_eval/claude.gpt4.ref.jsonl)). During human evaluation, researchers can also understand the performance gap with SOTA LCLMs. You can also use the `python web_for_human_eval.py` website for the human evaluation process.
 - *GPT4 Evaluation*, `"evaluation": "LLM"`: We suggest battling with `turbo-16k-0613` and reporting `Win % vs turbo-16k-0613`. If your model is powerful enough, we suggest directly comparing with `Claude-100k`, and reporting `Win % vs Claude-100k`.
 We filter **17 long documents with 96 questions** for GPT4 evaluation considering the cost. 
@@ -137,8 +137,8 @@ where `--mode` denotes whether you are starting a new evaluation or continuing y
 See the running screenshot [here](#human_demo)
 
 
-### Statistics of LEval
-LEval contains 411 long documents and 2043 instruction-response pairs, with input long documents in an average of 7217 words. The detailed statistics are listed in the following table. We list the average length of words, while the corresponding number of tokens should be 1.5x longer according to experience.
+### Statistics of L-Eval
+L-Eval contains 411 long documents and 2043 instruction-response pairs, with input long documents in an average of 7217 words. The detailed statistics are listed in the following table. We list the average length of words, while the corresponding number of tokens should be 1.5x longer according to experience.
 #### Exact match (195 docs and 893 questions)
 | data-name               | source |  Instruct-style | # samples |# instructions | avg-doc-len | avg-instruct-len |
 | ------------------- | :-- | :------------ | :--------: | :---:  | :---: | :-----: |
@@ -166,7 +166,7 @@ LEval contains 411 long documents and 2043 instruction-response pairs, with inpu
 | tv_show_summ        |  [Summary of TV shows from SummScreen](https://github.com/mingdachen/SummScreen) |  summarization   |  13 | 13  | 5834 |
 
 For generation tasks, the average word length of reference is 95.
-The URLs denote where we collect the initial version of LEval and **detailed data collection and preprocess procedure** of LEval can be found in our paper.
+The URLs denote where we collect the initial version of L-Eval and **detailed data collection and preprocess procedure** of L-Eval can be found in our paper.
 
 <a name="submit"></a>
 ## How to Submit
@@ -215,9 +215,9 @@ We will also test the following open-sourced long-context models:
 - [ ] ChatGLM2-6b
 - [ ] MPT-StoryWriter-7b
 
-Welcome to contribute to  LEval leaderboard!
+Welcome to contribute to L-Eval leaderboard!
 
-We are also interested results of `Claude-100k` and `gpt4-32k` on the Exam group of LEval but their APIs are not currently available to us. We would greatly appreciate it if you could help us evaluate these models on LEval-Exam.
+We are also interested results of `gpt4-32k` on the Exam group of L-Eval but their APIs are not currently available to us. We would greatly appreciate it if you could help us evaluate these models on the  Exam group.
 
 ## Other Tools
 ### Scripts to generate the output of turbo-16k-0613
@@ -228,7 +228,7 @@ python Tools/turbo16k_api_call.py --metric exam_eval (or ngram_eval, human_eval,
 We also implement the retrieval-based method using [langchain](https://github.com/hwchase17/langchain).
 
 ### A flask-based annotation website for jsonl files
-We have also released a very easy-to-use annotation website for LEval. To run this script, you should install flask. The script is used to view and annotate local jsonl files.
+We have also released a very easy-to-use annotation website for L-Eval. To run this script, you should install flask. The script is used to view and annotate local jsonl files.
 Start running the website on `127.0.0.1:5000` by:
 ```
 python Tools/web_annotate_jsonl.py --path LEval-data/Generation/meeting_summ.jsonl --mode begin --new_pairs_num 1
@@ -255,6 +255,6 @@ You can score the outputs from different models via the website. After completin
 This work is done by Fudan University and The University of Hong Kong.
 Primary contributors: Chenxin An, Shansan Gong, Ming Zhong, Mukai Li, Jun Zhang, Lingpeng Kong, and Xipeng Qiu.
 
-Todo: Acknowledge the original authors of the papers we used for LEval.
+Todo: Acknowledge the original authors of the papers we used for L-Eval.
 ## Citation
 The paper is under preparation
