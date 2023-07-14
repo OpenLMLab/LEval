@@ -1,3 +1,0 @@
-﻿Model,financial_qa,legal_contract_qa,multidoc_qa,narrative_qa,natural_question,scientific_qa,F1 avg,<====>,gov_report_summ,news_summ,paper_assistant,patent_summ,review_summ,tv_show_summ,meeting_summ,ROUGE avg,Chunking,Retrieval,In-domain data,In-context examples,Context length
-turbo-16k-0613,45.36,24.87,31.45,18.20,45.90,28.25,32.34,<====>,45.90/15.60/23.64,35.30/8.12/16.06,39.55/10.92/18.61,45.98/20.30/29.28,30.18/7.14/18.67,31.97/5.36/16.87,30.20/7.22/19.31,37.01/10.67/20.35,no,no,no,0,16k
-retrieval-turbo-0613,39.69,24.09,35.62,18.59,49.66,33.36,33.50,<====>,44.96/14.34/20.75,35.67/7.71/15.43,38.07/9.61/17.33,45.58/15.90/27.65,29.81/6.47/18.91,29.96/3.33/15.24,31.92/8.24/20.84,36.57/9.37/19.45,no,yes,no,0,4k
