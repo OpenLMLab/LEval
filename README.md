@@ -171,10 +171,10 @@ The URLs denote where we collect the initial version of L-Eval and **detailed da
 <a name="submit"></a>
 ## How to Submit
 The leaderboard contains 5 `csv` files: [exam](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/exam_LEval_leaderboard.csv), 
-[f1](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/f1_LEval_leaderboard.csv),[rouge_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/rouge_LEval_leaderboard.csv),
+[f1](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/f1_LEval_leaderboard.csv),[rouge](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/rouge_LEval_leaderboard.csv),
 [vsTurbo_llm](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/llm_LEval_leaderboard.csv) and  [vsClaude_llm](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/vsClaude_LEval_leaderboard.csv).
 
-To submit your results on our leaderboard, you can send an email to `levalbenchmark@gmail.com`
+To submit your results on our leaderboard, you can send an email to `levalbenchmark@gmail.com`. 
 #### Your submission should include 4 things:
 
 * Metadata: Model name, number of parameters, and links to your paper/blog/GitHub/demo.
@@ -190,7 +190,7 @@ We will randomly verify some results with the submitted output files.
     -  `Avg`:  averaging over each dataset’s overall performance score.
     - `Chunking`: whether splitting the long document into smaller chunks.
     - `Retrieval`: whether using retrieval
-    -  `In-domain data`: whether incorporating in-domain data (e.g.  meetings in qmsum, stories from narrative_qa) into finetuning.
+    -  `In-domain data`: whether incorporating in-domain data (e.g.  meetings in qmsum, stories from narrative_qa) into finetuning. Data in L-Eval should NEVER be involved in training.
     -  `In-context examples`: number of additional in-context examples.
     -  `Context length`: the context length of your base model.
     -  `Multi-turn Dial`: whether supporting multiple rounds of dialogue.
