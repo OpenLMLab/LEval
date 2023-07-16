@@ -11,14 +11,13 @@ import json
 from glob import glob
 from tqdm import tqdm
 from datasets import load_dataset
-from jsonl_utils import read_jsonl
+from jsonl_utils import *
+
 
 def num_tokens_from_string(string: str, encoding_name: str) -> int:
     encoding = tiktoken.encoding_for_model(encoding_name)
     num_tokens = len(encoding.encode(string))
     return num_tokens
-
-
 
 
 def main():
@@ -117,63 +116,21 @@ def to_filename(task_name):
 if __name__ == "__main__":
     openai.api_key = ""
 
-    datasets_Exam = ["coursera", "quality", "topic_retrieval_longchat", "tpo", "gsm100"]
-    datasets_Gen = ["financial_qa", "gov_report_summ", "legal_contract_qa", "meeting_summ", "multidoc_qa", "narrative_qa", "natural_question", "news_summ", "paper_assistant", "patent_summ", "review_summ", "scientific_qa", "tv_show_summ"]
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--metric', choices=["llm_turbo_eval","llm_gpt4_eval","exam_eval", "ngram_eval", "human_eval"], default="exam_eval", help='metric name from ["turbo_eval","gpt4_eval","auto_eval", ...]')
-    parser.add_argument('--task_path', type=str, default=None, help='set this if you want test a specific task , example: LEval-data/Exam/coursera.jsonl or LEval-data/Exam/ ')
+    parser.add_argument('--task_path', type=str, default=None, help= 'set this if you want test a specific task , example: LEval-data/Closed-ended-tasks/coursera.jsonl or LEval-data/Closed-ended-tasks/ ')
     parser.add_argument('--task_name', type=str, default=None, help='set this if you want test a specific task from huggingface, example: coursera')
     parser.add_argument('--gsm', action='store_true', help='set this if you want to test gsm100 dataset')
     args = parser.parse_args()
     key_data_pairs = {}
 
-    if args.task_name in datasets_Exam:
+    if args.task_name in datasets_closed_ended:
         args.metric = "exam_eval"
     else:
         args.metric = "ngram_eval"
 
     openai_model = "turbo-16k-0613"
     data_save_path = f"Predictions/{args.metric}/{openai_model}"
-    os.makedirs(f"Predictions/{args.metric}", exist_ok=True)
-    if "llm" not in args.metric:
-        os.makedirs(data_save_path, exist_ok=True)
-
-        if args.task_name:
-            data = load_dataset('L4NLP/LEval', args.task_name, split='test')
-            key_data_pairs[to_filename(args.task_name)] = data
-        elif args.task_path:
-            files = glob(args.task_path)
-            for file_path in files:
-                data = read_jsonl(file_path)
-                match = re.search(r'/([^/]*)\.jsonl', file_path)
-                file_name = match.group(1)
-                key_data_pairs[to_filename(file_name)] = data
-        else:
-            if args.metric == "ngram_eval":
-                datasets_eval = datasets_Gen
-            else:
-                datasets_eval = datasets_Exam
-            for task_name in datasets_eval:
-                data = load_dataset('L4NLP/LEval', task_name, split='test')
-                key_data_pairs[to_filename(task_name)] = data
-    else:
-        for gen_data in datasets_Gen:
-            try:
-                data = load_dataset('L4NLP/LEval', gen_data, split='test')
-            except:
-                print(f"dataset {gen_data} not found in huggingface, try to load from local file")
-                data = read_jsonl(f"LEval-data/Generation/{gen_data}.jsonl")
-            if args.metric == "llm_turbo_eval":
-                data =  [d for d in data if d["evaluation"] == "human" or d["evaluation"] == "LLM"]
-            elif args.metric == "llm_gpt4_eval":
-                data = [d for d in data if d["evaluation"] == "LLM"]
-            else:
-                data = [d for d in data if d["evaluation"] == "human"]
-            file_name_llm = data_save_path + ".pred.jsonl"
-            if file_name_llm not in key_data_pairs:
-                key_data_pairs[file_name_llm] = data
-            else:
-                key_data_pairs[file_name_llm] += data
+    build_key_data_pairs(args, key_data_pairs, data_save_path)
 
     sys.exit(main())
