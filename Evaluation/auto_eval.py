@@ -11,7 +11,6 @@ from em import compute_exact_match
 from f1 import compute_f1
 import argparse
 import datasets
-import json
 
 
 _DESCRIPTION = """\
@@ -249,8 +248,23 @@ def _compute_helper(
 
 def postprocess_output(response):
     # Use regular expression to replace anything that is not A, B, C or D with an empty string
+    if response in "ABCD":
+        return response
+    pattern = r"\s*[A-Z](?=[\s.)])"
+    options = re.findall(pattern, response)
+    cleaned_str = ' '.join(options).strip()
+    # random guess
+    if len(cleaned_str) < 1:
+        cleaned_str = "A"
+    cleaned_str = re.sub(r'[^A-D]', '', cleaned_str)
+    s_set = set(cleaned_str)
+    cleaned_str = "".join(sorted(s_set))
+    return cleaned_str
+
+def postprocess_gt(response):
+    # Use regular expression to replace anything that is not A, B, C or D with an empty string
     input_str = response.split()[0]
-    cleaned_str = re.sub(r'[^A-D]', '', response)
+    cleaned_str = re.sub(r'[^A-D]', '', input_str)
     # random guess
     if len(cleaned_str) < 1:
         cleaned_str = "A"
@@ -306,7 +320,7 @@ if __name__ == '__main__':
     config_name = None
     for instance in pred_data:
         if args.with_options:
-            references.append([postprocess_output(instance["gt"])])
+            references.append([postprocess_gt(instance["gt"])])
             predictions.append(postprocess_output(instance[prediction_key]))
         elif args.gsm:
             references.append([process_math(instance["gt"])])
