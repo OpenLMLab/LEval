@@ -10,6 +10,8 @@ There have been many studies exploring the expansion of context length in large 
 
 We hope L-Eval could help researchers and developers track the progress of long-context language models (LCLMs) and understand the strengths/shortcomings of different methods.
 
+*note: The data and code in this repository are not the most up-to-date; We are actively working on open-source.*
+
 📜 [Why we build L-Eval and the details of these tasks](#why)
 
 🔍 [View the results](https://github.com/OpenLMLab/LEval/tree/main/Leaderboard)
