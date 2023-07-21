@@ -176,7 +176,7 @@ if __name__ == "__main__":
     input(f"Your prediction file will be saved to: {data_save_path} \npress enter to confirm")
 
     device = torch.device(f'cuda:{args.gpu}' if torch.cuda.is_available() else 'cpu')
-    tokenizer = AutoTokenizer.from_pretrained(model_path, cache_dir="/home/llm")
-    model = LlamaForCausalLM.from_pretrained(model_path, cache_dir="/home/llm", torch_dtype=torch.bfloat16).to(device)
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    model = LlamaForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16).to(device)
     build_key_data_pairs(args, key_data_pairs, data_save_path)
     sys.exit(main())
