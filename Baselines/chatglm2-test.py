@@ -91,7 +91,7 @@ if __name__ == "__main__":
 
     device = torch.device(f'cuda:{args.gpu}' if torch.cuda.is_available() else 'cpu')
 
-    tokenizer = AutoTokenizer.from_pretrained(model_path, cache_dir="/home/llm/", trust_remote_code=True)
+    tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
     model = AutoModel.from_pretrained(model_path, trust_remote_code=True, torch_dtype=torch.bfloat16).to(device)
     model = model.eval()
     build_key_data_pairs(args, key_data_pairs, data_save_path)
