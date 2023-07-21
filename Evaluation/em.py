@@ -37,7 +37,9 @@ def exact_match_score(prediction, ground_truth):
             gt = float(ground_truth)
             res = int(pre == gt)
         except ValueError:
-            if ground_truth in prediction: # for topic retrieval
+            if len(prediction.split("\n")) > 0:
+                prediction = prediction.split("\n")[0]
+            if ground_truth.lower() in prediction.lower(): # for topic retrieval
                 res = 1
         
     print(prediction, ground_truth, f"| score={res}")
@@ -63,5 +65,5 @@ def compute_exact_match(predictions, references):
             correct +=1
         if res == 0.25:
             half_correct +=1
-    print(f"There are {correct} answers {half_correct} can not select all correct options among {len(predictions)} questions.")
+    print(f"There are {correct} correct answers \n {half_correct} can not select all correct options\n Total: {len(predictions)} questions.")
     return 100.0 * exact_match / len(predictions)

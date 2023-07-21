@@ -2,7 +2,7 @@
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from Tools.jsonl_utils import *
+from Baselines.LEval_config import *
 from collections import defaultdict
 from copy import deepcopy
 import re
@@ -28,7 +28,6 @@ Returns: depending on the LEval subset, one or several of:
     "exact_match": Exact Match score
     "f1": F1 score
     "rouge": ROUGE score
-    "bertscore": BERTScore F1
 ```
 """
 
@@ -48,12 +47,7 @@ DATASET_TO_METRICS = {
         "metrics_to_compute": ["f1"],
         "LEval_score_key": "f1",
         "display_keys": ["f1"],
-    },
-    "bertscore": {
-        "metrics_to_compute": ["bertscore"],
-        "LEval_score_key": "bertscore",
-        "display_keys": ["bertscore"],
-    },
+    }
 }
 
 
@@ -250,15 +244,19 @@ def postprocess_output(response):
     # Use regular expression to replace anything that is not A, B, C or D with an empty string
     if response in "ABCD":
         return response
+    if "coursera" not in args.pred_file:
+        for i,chr in enumerate(response):
+            if chr in "ABCD":
+                return chr
+    # retrieve multiple correct answers (for coursera)
     pattern = r"\s*[A-Z](?=[\s.)])"
     options = re.findall(pattern, response)
     cleaned_str = ' '.join(options).strip()
-    # random guess
-    if len(cleaned_str) < 1:
-        cleaned_str = "A"
     cleaned_str = re.sub(r'[^A-D]', '', cleaned_str)
     s_set = set(cleaned_str)
     cleaned_str = "".join(sorted(s_set))
+    if len(cleaned_str) < 1:     # random guess
+        cleaned_str = "A"
     return cleaned_str
 
 def postprocess_gt(response):
@@ -299,15 +297,13 @@ def process_math(response):
 
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--pred_file", type=str, default="", help="example: turbo-16k-0613-output/output.jsonl")
-    parser.add_argument('--with_options', action='store_true', help="whether the task has provided options")
-    parser.add_argument('--gsm',action='store_true', help="set True for gsm100")
     args = parser.parse_args()
     SUPPORT_METRICS  = ["f1", "rouge", "exam"]
 
     # search for the prediction key
-
     pred_data = read_jsonl(args.pred_file)
     prediction_key = 0
     for key in pred_data[0]:
@@ -318,11 +314,20 @@ if __name__ == '__main__':
     predictions = []
     references = []
     config_name = None
+
+    with_options = False
+    for task in with_option_tasks:
+        if task in args.pred_file:
+            with_options = True
+            break
+
     for instance in pred_data:
-        if args.with_options:
+        if instance["evaluation"] not in SUPPORT_METRICS:
+            continue
+        if with_options:
             references.append([postprocess_gt(instance["gt"])])
             predictions.append(postprocess_output(instance[prediction_key]))
-        elif args.gsm:
+        elif "gsm" in args.pred_file:
             references.append([process_math(instance["gt"])])
             predictions.append(process_math(instance[prediction_key]))
         else:

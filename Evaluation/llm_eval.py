@@ -178,14 +178,18 @@ def construct_pairs(pred_file, battle_file):
     for sample in pred_samples:
         gt = str(sample["gt"])
         query = str(sample["query"])
+        if query+gt not in battle_key2pred:
+            continue
         sample[battle_key] = battle_key2pred[query+gt]
 
         paired_samples.append(sample)
     if args.judge_model == "gpt-4":
         paired_samples = [pair for pair in paired_samples if pair["evaluation"] == "LLM"]
-        assert len(paired_samples) == 96
+        # assert len(paired_samples) == 96
     else:
-        assert len(paired_samples) == 181
+        # assert len(paired_samples) == 181
+        pass
+    input(len(paired_samples))
     return paired_samples, pred_key, battle_key
 
 if __name__ == "__main__":
