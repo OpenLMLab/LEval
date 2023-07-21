@@ -89,9 +89,13 @@ Each long document has multiple queries and corresponding responses. The format 
 ```
 
 #### Step 2. Generate your prediction files
-To generate the output files, just modify one of baseline scripts, e.g., `longchat-test.py/llama2-chat-test.py` which has the most similar input format with yours. Then replace the model name with your own model and run:
+To generate the output files, just modify one of the baseline scripts from the `Baselines` folder, e.g., `longchat-test.py/llama2-chat-test.py` which has the most similar input format with yours. Then replace the model name with your own model and run:
 ```
-python Baselines/<your model>-test.py --task_path LEval-data/Closed-ended-tasks/tpo.jsonl or (--task_name tpo)  --gpu 0 --metric ngram_eval (exam_eval, llm_eval, human_eval)
+python Baselines/<your model>-test.py --task_path LEval-data/Closed-ended-tasks/tpo.jsonl or (--task_name tpo)  --gpu 0 --metric exam_eval (exam_eval, ngram ,llm_eval, human_eval)
+```
+or 
+```
+python Baselines/<your model>-test.py  --gpu 0 --metric ngram_eval [This will test all samples that use the ngram metric]
 ```
 where `--metric` means which metric you want to use (e.g., we use `exam_eval` for closed-ended tasks). Details about metrics in L-Eval can be found in the next section. The script will print out the path to the prediction file and you need to press enter to confirm.
 If you are using LLaMa, we also support FlashAttention in inference which can save your gpu memory, please add the param `--flash`.
