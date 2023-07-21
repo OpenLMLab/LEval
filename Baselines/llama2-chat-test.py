@@ -82,9 +82,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     key_data_pairs = {}
 
-    #model_path = f"meta-llama/Llama-2-{args.scale}-chat-hf"
-    model_path = "/home/llm/llama2-7b-chat/"
-    open_source_model = "llama2-7b-chat-4k"
+    model_path = f"meta-llama/Llama-2-{args.scale}-chat-hf"
+    open_source_model = f"llama2-{args.scale}-chat-4k"
 
     if args.flash:
         replace_llama_attn_with_flash_attn()
