@@ -97,8 +97,8 @@ if __name__ == "__main__":
     data_save_path = f"Predictions/{args.metric}/{open_source_model}"
     input(f"Your prediction file will be saved to: {data_save_path} \npress enter to confirm")
 
-    tokenizer = AutoTokenizer.from_pretrained(model_path, cache_dir="/home/llm", trust_remote_code=True)
-    model = AutoModelForCausalLM.from_pretrained(model_path, cache_dir="/home/llm", torch_dtype=torch.bfloat16).to(
+    tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16).to(
         device)
 
     build_key_data_pairs(args, key_data_pairs, data_save_path)
