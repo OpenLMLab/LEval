@@ -244,6 +244,8 @@ Primary contributors: Chenxin An, Shansan Gong, Ming Zhong, Mukai Li, Jun Zhang,
 [bigpatent](https://evasharma.github.io/bigpatent/), [SPACE](https://github.com/stangelid/qt), [Qasper](https://github.com/allenai/qasper-led-baseline), [SummScreen](https://github.com/mingdachen/SummScreen)
 
 Thanks again for their effort!!
+----
+Please do not hesitate to ask any questions about L-Eval. You can reach us via issues or by email at `cxan20@fudan.edu.cn`
 
 ## Citation
 ```
