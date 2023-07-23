@@ -5,7 +5,7 @@
 ------
 ### *L-Eval: Instituting Standardized Evaluation for Long Context Language Models*
 
-L-Eval ([preview on 🤗 HuggingFace](https://huggingface.co/datasets/L4NLP/LEval) • [check our 📃paper](https://arxiv.org/abs/2307.11088) ) is a comprehensive long-context language models evaluation suite with 18 long document tasks across multiple domains that require reasoning over long texts, including summarization, question answering, in-context learning with long CoT examples, topic retrieval, and paper writing assistance. L-Eval is a high-quality test set with 411 long documents and 2043 query-response pairs. All samples in L-Eval have been manually annotated or verified by the authors. 
+L-Eval ([preview on 🤗 Hugging Face](https://huggingface.co/datasets/L4NLP/LEval) • [check our 📃paper](https://arxiv.org/abs/2307.11088) ) is a comprehensive long-context language models evaluation suite with 18 long document tasks across multiple domains that require reasoning over long texts, including summarization, question answering, in-context learning with long CoT examples, topic retrieval, and paper writing assistance. L-Eval is a high-quality test set with 411 long documents and 2043 query-response pairs. All samples in L-Eval have been manually annotated or verified by the authors. 
 There have been many studies exploring the expansion of context length in large models. However, it remains to be explored whether these methods perform well enough in downstream tasks and whether they can surpass previous methods based on retrieval or chunking.  
 
 We hope L-Eval could help researchers and developers track the progress of long-context language models (LCLMs) and understand the strengths/shortcomings of different methods.
@@ -60,7 +60,7 @@ We have noticed a lack of a good benchmark for evaluating LLMs' long-context mod
 
 ## Quick use
 #### Step 1. download the data 
-It is easy to load the test data in one line with huggingface datasets, and we give the example scripts:
+It is easy to load the test data in one line with Hugging Face datasets, and we give the example scripts:
 ```python
 from datasets import load_dataset
 
