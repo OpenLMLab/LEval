@@ -89,7 +89,7 @@ Each long document has multiple queries and corresponding responses. The format 
 ```
 
 #### Step 2. Generate your prediction files
-To generate the output files, just modify one of the baseline scripts from the `Baselines` folder, e.g., `longchat-test.py/llama2-chat-test.py` which has the most similar input format with yours. Then replace the model name with your own model and run:
+We provide scripts to produce the results of baseline models reported in our paper in the `Baselines` folder named `<model name>-test.py`. To generate the output files with a new model, just modify one of the baseline scripts from the `Baselines` folder, e.g., `longchat-test.py/llama2-chat-test.py` which has the most similar input format to yours. Then replace the model name with your own model and run:
 ```
 python Baselines/<your model>-test.py --task_path LEval-data/Closed-ended-tasks/tpo.jsonl or (--task_name tpo)  --gpu 0 --metric exam_eval (exam_eval, ngram ,llm_eval, human_eval)
 ```
@@ -192,9 +192,6 @@ We will randomly verify some results with the submitted output files.
     - `n_draws` number of draws including results of swapping the position of two answers.
     - `win % vs turbo16k` The win rate of your model in the battle with `turbo-16k-0613`
     - `win % vs claude100k`([vsClaude_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/vsClaude_LEval_leaderboard.csv)) The win rate of your model in the battle with `Claude-100k`
-
-
-## Reproducing baselines
 
 
 ## Other Tools
