@@ -205,13 +205,13 @@ if __name__ == "__main__":
                               "prompt_template": "[User Question]\n{question}\n\n[The Start of Reference Answer]\n{ref_answer}\n[The End of Reference Answer]\n\n[The Start of Assistant A's Answer]\n{answer_a}\n[The End of Assistant A's Answer]\n\n[The Start of Assistant B's Answer]\n{answer_b}\n[The End of Assistant B's Answer]", "description": "prompt without long documents as input", "category": "general", "output_format": "[[A]]" }
 
     # Load questions
-    output_file = args.pred_path.replace("jsonl", "judge.jsonl")
+    output_file = args.pred_file.replace("jsonl", "judge.jsonl")
     if args.judge_model == "gpt-4":
         battle_file = f"Predictions/llm_gpt4_eval/{args.battle_with}.pred.jsonl"
     else:
         battle_file = f"Predictions/llm_turbo_eval/{args.battle_with}.pred.jsonl"
 
-    samples, model_1, model_2 = construct_pairs(args.pred_path, battle_file)
+    samples, model_1, model_2 = construct_pairs(args.pred_file, battle_file)
     # Show match stats and prompt enter to continue
     start_idx = 0
     statistics = {"tie":0, "error":0}
