@@ -196,7 +196,7 @@ if __name__ == "__main__":
     openai.api_key = "" # please fulfill your api key here
     parser = argparse.ArgumentParser()
     parser.add_argument("--judge_model", type=str, default="gpt-4", choices=["gpt-4", "gpt-3.5-turbo"])
-    parser.add_argument('--pred_path', default="Predictions/llm_gpt4_eval/<model_name>.pred.jsonl")
+    parser.add_argument('--pred_file', default="Predictions/llm_gpt4_eval/<model_name>.pred.jsonl")
     parser.add_argument('--battle_with', default="turbo-16k-0613", choices=["turbo-16k-0613", "claude-100k"])
     args = parser.parse_args()
 
