@@ -229,7 +229,7 @@ You can score the outputs from different models via the website. After completin
 ## Acknowledgement
 This work is done by Fudan University and The University of Hong Kong.
 
-**Primary contributors*: Chenxin An, Shansan Gong, Ming Zhong, Mukai Li, Jun Zhang, Lingpeng Kong, and Xipeng Qiu.
+**Primary contributors**: Chenxin An, Shansan Gong, Ming Zhong, Mukai Li, Jun Zhang, Lingpeng Kong, and Xipeng Qiu.
 
 We also thank Siyu Ren, Qinyuan Cheng, and Zhiyong Wu for their help.
 
