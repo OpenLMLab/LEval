@@ -98,7 +98,7 @@ or
 python Baselines/<your model>-test.py  --gpu 0 --metric ngram_eval [This will test all samples that use the ngram metric]
 ```
 where `--metric` means which metric you want to use (e.g., we use `exam_eval` for closed-ended tasks). Details about metrics in L-Eval can be found in the next section. The script will print out the path to the prediction file and you need to press enter to confirm.
-If you are using LLaMa, we also support FlashAttention in inference which can save your gpu memory, please add the param `--flash`.
+If you are using LLaMa, we also support **Flash Attention** during inference which can save your GPU memory (but cannot speedup decoding). Please add the param `--flash`.
 
 #### Step 3. Evaluate the prediction file
 Based on the `metric` passed in Step 2, you can choose one of the scripts from `Evaluation/auto_eval.py`,  `Evaluation/llm_eval.py`, and `Evaluation/web_human_eval.py`. Then run the following command:
