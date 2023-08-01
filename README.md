@@ -21,7 +21,7 @@ We hope L-Eval could help researchers and developers track the progress of long-
 - ✏️ [Annotate & filter QA pairs with flask web app](#tool)
 
 ## Updates of L-Eval
-- 2023.8.1  We've tested more models, including GPT4, vicuna and Llama2-13B, and updated the results for Turbo-16k by incorporating length instructions. We propose including the expected length of the answer in the instructions (e.g., 'Answer this question in 10 words') for the evaluation of open-ended tasks to reduce length biases. The previously released Turbo-16k did not include this feature, and its performance was slightly lower than that of the current version. Please replace the turbo-16k predicted files with new files committed on 2023.8.1.
+- 2023.8.1  We've tested more models, including GPT4, vicuna and Llama2-13B, and updated the results for Turbo-16k by incorporating length instructions to reduce length biases in open-ended tasks. The previously released Turbo-16k did not include this feature, and its performance was slightly lower than that of the current version. Please replace the turbo-16k predicted files with new files committed on 2023.8.1.
 - 2023.8.1  Predictions of LCLMs tested in this paper are available [here](https://drive.google.com/drive/folders/1pPbIXw0eRD_XZVMixZL4BG_SrMwFH3SH?usp=sharing) and judgements from gpt4 are available [here](https://drive.google.com/drive/folders/1bUGs-2isRLaY5xCz8k3mkKDArX6WxX0u?usp=sharing). 
 We hope these can help researchers analyze different models and metrics. We also add a related work section discussing other long sequences benchmarks.  
 
@@ -86,8 +86,8 @@ Each long document has multiple queries and corresponding responses. The format 
 ```
 
 #### Step 2. Generate your prediction files
-We test all the baselines with a single 80G A800 GPU. If your encounter OOM problem, please refer to this [part](#inference)
-To generate the output files, just modify one of baseline scripts, e.g., `longchat-test.py/llama2-chat-test.py` which has the most similar input format with yours. Then replace the model name with your own model and run:
+We test all the baselines with a single 80G A800 GPU. If you encounter OOM problem, please refer to this [part](#inference)
+To generate the output files, just modify one of the baseline scripts, e.g., `longchat-test.py/llama2-chat-test.py` which has the most similar input format with yours. Then replace the model name with your own model and run:
 ```
 python Baselines/chatglm2-test.py --task_path LEval-data/Closed-ended-tasks/tpo.jsonl or (--task_name tpo)  --gpu 0 --metric ngram_eval (exam_eval, llm_eval, human_eval)
 ```
@@ -95,7 +95,7 @@ where `--metric` means which metric you want to use (e.g., we use `exam_eval` fo
 If you are using LLaMa, we also support FlashAttention in inference which can save your gpu memory, please add the param `--flash`.
 
 #### Step 3. Evaluate the prediction file
-Based on the `--metric` passed in Step 2, you can choose one of the script from `Evaluation/auto_eval.py`,  `Evaluation/llm_eval.py`, and `Evaluation/web_human_eval.py`. Then run the following command:
+Based on the `--metric` passed in Step 2, you can choose one of the scripts from `Evaluation/auto_eval.py`,  `Evaluation/llm_eval.py`, and `Evaluation/web_human_eval.py`. Then run the following command:
 ```
 python Evaluation/auto_eval.py --pred_file Predictions/exam_eval/<your model>/coursera.pred.jsonl 
 ```
@@ -190,16 +190,17 @@ We will randomly verify some results with the submitted output files.
 
 <a name="inference"></a>
 ## Memory-efficient inference and multiple GPUs inference
-Guidelines are comming soon
+Guidelines are coming soon
 
 ## Other Tools
 <a name="tool"></a>
-### Using langchain to build retrieval-based baselines
+### Using Langchain to build retrieval-based baselines
 You can use the scripts in `Tools` to reproduce the output of results run by us. An example of reproducing the output of `turbo-16k-0613` is as follows:
 ```
-python Tools/turbo16k_api_call.py --metric exam_eval (or ngram_eval, human_eval, llm_turbo_eval, llm_gpt4_eval)
+python Baselines/turbo4k-retrieve-test.py --metric exam_eval (or ngram_eval, human_eval, llm_turbo_eval, llm_gpt4_eval) --retriever BM25 (or AdaEmbedding)
 ```
-We also implement the retrieval-based method using [langchain](https://github.com/hwchase17/langchain).
+The retrieval-based method is implemented with [langchain](https://github.com/hwchase17/langchain). If you want to use BM25 retriever, please first install [Elasticsearch](https://github.com/elastic/elasticsearch). If you want to try ada embedding (cheap but effective), please fill your api-key.
+ 
 
 ### A flask-based annotation website for jsonl files
 We have also released a very easy-to-use annotation website for L-Eval and make sure you have installed flask.
