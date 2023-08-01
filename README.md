@@ -195,7 +195,7 @@ Guidelines are coming soon
 ## Other Tools
 <a name="tool"></a>
 ### Using Langchain to build retrieval-based baselines
-You can use the scripts in `Tools` to reproduce the output of results run by us. An example of reproducing the output of `turbo-16k-0613` is as follows:
+You can use the script `turbo4k-retrieve-test.py` in `Baselines` to enhance a regular LLM with a sparser or dense retriever. An example is as follows:
 ```
 python Baselines/turbo4k-retrieve-test.py --metric exam_eval (or ngram_eval, human_eval, llm_turbo_eval, llm_gpt4_eval) --retriever BM25 (or AdaEmbedding)
 ```
