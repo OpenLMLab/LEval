@@ -6,7 +6,7 @@
 ### *L-Eval: Instituting Standardized Evaluation for Long Context Language Models*
 
 L-Eval ([preview on 🤗 HuggingFace Datasets](https://huggingface.co/datasets/L4NLP/LEval) • [check our 📃 paper](https://arxiv.org/abs/2307.11088) ) is a comprehensive long-context language models evaluation suite with 18 long document tasks across multiple domains that require reasoning over long texts, including summarization, question answering, in-context learning with long CoT examples, topic retrieval, and paper writing assistance. L-Eval is a high-quality test set with  411 long documents and  2043 manually labeled query-response pairs.   
-Currently, there have been great efforts invested into the expansion of context length for large language models. 
+Currently, there have been great efforts invested in the expansion of context length for large language models. 
 But it remains unclear whether extending the context can offer substantial gains over traditional methods such as retrieval, and to what extent it improves upon their regular (short context) counterparts  in practical downstream tasks. 
 
 We hope L-Eval could help researchers and developers track the progress of long-context language models (LCLMs) and understand the strengths/shortcomings of different methods.
@@ -23,7 +23,7 @@ We hope L-Eval could help researchers and developers track the progress of long-
 ## Updates of L-Eval
 - 2023.8.1  We've tested more models, including GPT4, vicuna and Llama2-13B, and updated the results for Turbo-16k by incorporating length instructions. We propose including the expected length of the answer in the instructions (e.g., 'Answer this question in 10 words') for the evaluation of open-ended tasks to reduce length biases. The previously released Turbo-16k did not include this feature, and its performance was slightly lower than that of the current version. Please replace the turbo-16k predicted files with new files committed on 2023.8.1.
 - 2023.8.1  Predictions of LCLMs tested in this paper are available [here](https://drive.google.com/drive/folders/1pPbIXw0eRD_XZVMixZL4BG_SrMwFH3SH?usp=sharing) and judgements from gpt4 are available [here](https://drive.google.com/drive/folders/1bUGs-2isRLaY5xCz8k3mkKDArX6WxX0u?usp=sharing). 
-We hope these can help researchers analyse different models and metrics. We also add a related work section discussing with other long sequences benchmarks.  
+We hope these can help researchers analyze different models and metrics. We also add a related work section discussing other long sequences benchmarks.  
 
 Please check our paper [v2](https://arxiv.org/abs/2307.11088) for more details.
 
@@ -56,7 +56,7 @@ The repository is structured as follows:
 
 
 ## Quick use
-#### Step 1. download the data 
+#### Step 1. Download the data 
 It is easy to load the test data in one line with huggingface datasets, and we give the example scripts:
 ```python
 from datasets import load_dataset
