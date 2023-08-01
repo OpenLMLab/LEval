@@ -1,77 +1,15 @@
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, LlamaForCausalLM
+# Code adapted from https://huggingface.co/kaiokendev/superhot-13b-8k-no-rlhf-test/blob/main/llama_rope_scaled_monkey_patch.py
+
 from functools import partial
 
 import torch
-import transformers
-import transformers.models.llama.modeling_llama
 from llama_flash_attn_monkey_patch import replace_llama_attn_with_flash_attn
 import argparse
 from LEval_config import *
 from tqdm import tqdm
-
-class CondenseRotaryEmbedding(torch.nn.Module):
-    def __init__(
-        self, dim, ratio, max_position_embeddings=2048, base=10000, device=None
-    ):
-        super().__init__()
-        inv_freq = 1.0 / (base ** (torch.arange(0, dim, 2).float().to(device) / dim))
-        self.register_buffer("inv_freq", inv_freq)
-
-        # Build here to make `torch.jit.trace` work.
-        self.ratio = ratio
-        max_position_embeddings *= ratio
-        self.max_seq_len_cached = max_position_embeddings
-        # print(f"Monkey Patching condense ratio {ratio}")
-        t = (
-            torch.arange(
-                self.max_seq_len_cached,
-                device=self.inv_freq.device,
-                dtype=self.inv_freq.dtype,
-            )
-            / ratio
-        )
-        freqs = torch.einsum("i,j->ij", t, self.inv_freq)
-        # Different from paper, but it uses a different permutation in order to obtain the same calculation
-        emb = torch.cat((freqs, freqs), dim=-1)
-        dtype = torch.get_default_dtype()
-        self.register_buffer(
-            "cos_cached", emb.cos()[None, None, :, :].to(dtype), persistent=False
-        )
-        self.register_buffer(
-            "sin_cached", emb.sin()[None, None, :, :].to(dtype), persistent=False
-        )
-
-    def forward(self, x, seq_len=None):
-        # x: [bs, num_attention_heads, seq_len, head_size]
-        # This `if` block is unlikely to be run after we build sin/cos in `__init__`. Keep the logic here just in case.
-        if seq_len > self.max_seq_len_cached:
-            self.max_seq_len_cached = seq_len
-            t = (
-                torch.arange(
-                    self.max_seq_len_cached, device=x.device, dtype=self.inv_freq.dtype
-                )
-                / self.ratio
-            )
-            freqs = torch.einsum("i,j->ij", t, self.inv_freq)
-            # Different from paper, but it uses a different permutation in order to obtain the same calculation
-            emb = torch.cat((freqs, freqs), dim=-1).to(x.device)
-            self.register_buffer(
-                "cos_cached", emb.cos()[None, None, :, :].to(x.dtype), persistent=False
-            )
-            self.register_buffer(
-                "sin_cached", emb.sin()[None, None, :, :].to(x.dtype), persistent=False
-            )
-        return (
-            self.cos_cached[:, :, :seq_len, ...].to(dtype=x.dtype),
-            self.sin_cached[:, :, :seq_len, ...].to(dtype=x.dtype),
-        )
-
-
-def replace_llama_with_condense(ratio):
-    transformers.models.llama.modeling_llama.LlamaRotaryEmbedding = partial(
-        CondenseRotaryEmbedding, ratio=ratio
-    )
+import os
 
 
 def main():
@@ -119,7 +57,7 @@ def main():
                 else:
                     context = "Document is as follows. {} \nInstruction: {} " + f"The suggested output length is around {len(out.split())} words. "
                     message = header + " USER: " + sys_prompt + context
-                    message += " \nASSISTANT: "
+                    message += " \nASSISTANT: My english answer is:"
 
                 save_d['prompt'] = message.replace(document, "<long input>")
                 inputs = tokenizer(message.format(document, inst), return_tensors="pt").to(device)
@@ -142,7 +80,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--metric', choices=["llm_turbo_eval", "llm_gpt4_eval", "exam_eval", "ngram_eval", "human_eval"],
                         help='metric name from choices', required=True)
-    parser.add_argument('--max_length', type=int, default="16k", help='max length of the input, e.g., 2k, 16k')
+    parser.add_argument('--max_length', type=int, default="2k", help='max length of the input, e.g., 2k, 16k')
     parser.add_argument('--gpu', type=int, default=0)
     # set this if you do not want to use data from huggingface
     parser.add_argument('--task_path', type=str, default=None,
@@ -156,13 +94,11 @@ if __name__ == "__main__":
     parser.add_argument('--scale', default='7b', choices=['7b', '13b'])
     parser.add_argument('--flash', action='store_true', help='set this if you want to use flash attention')
     args = parser.parse_args()
+
     # 7b / 13b
-    model_path = f"lmsys/longchat-{args.scale}-16k"
-
-    replace_llama_with_condense(8)
-    open_source_model = f"longchat-{args.scale}-" + args.max_length
-    max_length = k_to_number(args.max_length) - max_new_tokens
-
+    model_path = f"lmsys/vicuna-{args.scale}-v1.3"
+    open_source_model = f"vicuna-{args.scale}-"+args.max_length
+    max_new_tokens = k_to_number(args.max_length) - max_new_tokens
     if args.flash:
         replace_llama_attn_with_flash_attn()
         open_source_model = open_source_model + "-flash"
@@ -171,9 +107,9 @@ if __name__ == "__main__":
     input(f"Your prediction file will be saved to: {data_save_path} \npress enter to confirm")
 
     device = torch.device(f'cuda:{args.gpu}' if torch.cuda.is_available() else 'cpu')
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
-
+    tokenizer = AutoTokenizer.from_pretrained(model_path, force_download=True, resume_download=False)
     model = LlamaForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16).to(device)
+    model.eval()
     key_data_pairs = {}
     build_key_data_pairs(args, key_data_pairs, data_save_path)
     sys.exit(main())

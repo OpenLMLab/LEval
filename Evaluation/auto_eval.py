@@ -249,6 +249,7 @@ def postprocess_output(response):
             if chr in "ABCD":
                 return chr
     # retrieve multiple correct answers (for coursera)
+    response = response.split("Question")[0]
     pattern = r"\s*[A-Z](?=[\s.)])"
     options = re.findall(pattern, response)
     cleaned_str = ' '.join(options).strip()

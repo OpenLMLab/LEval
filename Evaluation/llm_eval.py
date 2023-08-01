@@ -152,6 +152,8 @@ def calculate_win_rate():
     statistics.pop("tie")
     for key in statistics:
         print(f"win rate of {key} = {(score_of_tie+statistics[key])/total}")
+        print(f"win rate of {key} = {(score_of_tie + statistics[key]) / total}", file=f_out)
+
 
 def construct_pairs(pred_file, battle_file):
     pred_samples = read_jsonl(pred_file) # key :   query,   gt (ground truth), <model_name>_pred
@@ -189,15 +191,18 @@ def construct_pairs(pred_file, battle_file):
     else:
         # assert len(paired_samples) == 181
         pass
-    input(len(paired_samples))
+    # input(len(paired_samples))
     return paired_samples, pred_key, battle_key
 
 if __name__ == "__main__":
+
+    # gpt4 key
     openai.api_key = "" # please fulfill your api key here
     parser = argparse.ArgumentParser()
     parser.add_argument("--judge_model", type=str, default="gpt-4", choices=["gpt-4", "gpt-3.5-turbo"])
     parser.add_argument('--pred_file', default="Predictions/llm_gpt4_eval/<model_name>.pred.jsonl")
     parser.add_argument('--battle_with', default="turbo-16k-0613", choices=["turbo-16k-0613", "claude-100k"])
+
     args = parser.parse_args()
 
     judge_prompts = {"judge_model": args.judge_model, "name": "pair-v2", "type": "pairwise",
@@ -227,7 +232,8 @@ if __name__ == "__main__":
     for key in statistics:
         if key != "tie" and key != "error":
             print(f"n_wins of {key} = {statistics[key]}")
-
+    f_out =  open(output_file, "a")
     print(f"n_draws =", statistics["tie"], "n_error =", statistics["error"])
+    print(f"n_draws =", statistics["tie"], "n_error =", statistics["error"], file=f_out)
     calculate_win_rate()
     print("Details of the output during evaluation are saved in", output_file)

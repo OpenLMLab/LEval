@@ -5,20 +5,28 @@
 ------
 ### *L-Eval: Instituting Standardized Evaluation for Long Context Language Models*
 
-L-Eval ([preview on 🤗 Hugging Face](https://huggingface.co/datasets/L4NLP/LEval) • [check our 📃paper](https://arxiv.org/abs/2307.11088) ) is a comprehensive long-context language models evaluation suite with 18 long document tasks across multiple domains that require reasoning over long texts, including summarization, question answering, in-context learning with long CoT examples, topic retrieval, and paper writing assistance. L-Eval is a high-quality test set with 411 long documents and 2043 query-response pairs. All samples in L-Eval have been manually annotated or verified by the authors. 
-Many studies have explored the expansion of context length in large models. However, it remains to be explored whether these methods perform well enough in downstream tasks and surpass previous approaches based on retrieval or chunking. The community has released a considerable amount of instruction-following LCLMs (e.g., chatglm2-8k, longchat-16k, and xgen-8k), but how much stronger they can outperform their shorter versions remains uncertain.
+L-Eval ([preview on 🤗 HuggingFace Datasets](https://huggingface.co/datasets/L4NLP/LEval) • [check our 📃 paper](https://arxiv.org/abs/2307.11088) ) is a comprehensive long-context language models evaluation suite with 18 long document tasks across multiple domains that require reasoning over long texts, including summarization, question answering, in-context learning with long CoT examples, topic retrieval, and paper writing assistance. L-Eval is a high-quality test set with  411 long documents and  2043 manually labeled query-response pairs.
+
+There have been great efforts invested into the expansion of context length for large language models. 
+But it remains unclear whether extending the context can offer substantial gains over traditional methods such as retrieval, and to what extent it improves upon their regular (short context) counterparts  in practical downstream tasks. 
 
 We hope L-Eval could help researchers and developers track the progress of long-context language models (LCLMs) and understand the strengths/shortcomings of different methods.
 
-🧐 [Why we build L-Eval and how to use it](#use)
+- 🧐 [How to get the data](#use)  
+- 📏 [How to evaluate your models](#eval)  
+- 📨 [How to submit your results](#submit)  
+- 🔖 [View the Leaderboard](https://github.com/OpenLMLab/LEval/tree/main/Leaderboard)  
+- 🖇️ [Build a retrieval-based baseline with Langchain](#tool)  
+- 🧭️ [Memory-efficient inference and multiple GPUs inference](#inference)  
+- ✏️ [Annotate & filter QA pairs with flask web app](#tool)
 
-✅ [How to evaluate your models](#eval)
+## Updates of L-Eval
 
-📝 [How to submit your results](#submit)
+---------
+- 2023.8.1  We've tested more models, including GPT4, vicuna and Llama2-13B, and updated the results for Turbo-16k by incorporating length instructions. We propose including the expected length of the answer in the instructions (e.g., 'Answer this question in 10 words') for the evaluation of open-ended tasks to reduce length biases. The previously released Turbo-16k did not include this feature, and its performance was slightly lower than that of the current version. Please replace the turbo-16k predicted files with new files committed on 2023.8.1.
+- 2023.8.1  Predictions of LCLMs are available in [Predictions]() to help researchers analyse different models and metrics. We also add a related work section discussing with other long sequences benchmarks.  
 
-🔍 [View the Leaderboard here!](https://github.com/OpenLMLab/LEval/tree/main/Leaderboard)
-
-
+Please check our paper [v2](https://arxiv.org/abs/2307.11088) for more details.
 
 ## Folders
 The repository is structured as follows:
@@ -48,19 +56,11 @@ The repository is structured as follows:
 ```
 
 
-<a name="why"></a>
-## Why L-Eval
-With the support of GPT-4 and Claude for longer context inputs (e.g. 32k or 100k), an increasing number of researchers are exploring the long-context modeling capabilities of language models, including training new long-context language models (LCLMs) from scratch or extending existing LLMs to longer context windows. 
 
-Recent work has remarkably improved the performance of open-source large language models on datasets like MMLU, CEval, GSM8K, and BBH. Unfortunately, achieving good performance on longer contexts like GPT-4 and Claude still poses a significant challenge. We also found that fine-tuning the model on long sequences (16k or 32k) seems to be helpful for extending dialogue history (e.g.: ChatGLM2 and LongChat). However, the task of reasoning over lengthy documents through multiple rounds of queries remains challenging, especially considering not using retrieval-based approaches.
-
-We have noticed a lack of a good benchmark for evaluating LLMs' long-context modeling abilities. Therefore, we have collected zero-shot test samples in various tasks and domains to construct **L-Eval** benchmark. 
-
-<a name="use"></a>
 
 ## Quick use
 #### Step 1. download the data 
-It is easy to load the test data in one line with Hugging Face datasets, and we give the example scripts:
+It is easy to load the test data in one line with huggingface datasets, and we give the example scripts:
 ```python
 from datasets import load_dataset
 
@@ -89,19 +89,15 @@ Each long document has multiple queries and corresponding responses. The format 
 ```
 
 #### Step 2. Generate your prediction files
-We provide scripts to produce the results of baseline models reported in our paper in the `Baselines` folder named `<model name>-test.py`. To generate the output files with a new model, just modify one of the baseline scripts from the `Baselines` folder, e.g., `longchat-test.py/llama2-chat-test.py` which has the most similar input format to yours. Then replace the model name with your own model and run:
+To generate the output files, just modify one of baseline scripts, e.g., `longchat-test.py/llama2-chat-test.py` which has the most similar input format with yours. Then replace the model name with your own model and run:
 ```
-python Baselines/<your model>-test.py --task_path LEval-data/Closed-ended-tasks/tpo.jsonl or (--task_name tpo)  --gpu 0 --metric exam_eval (exam_eval, ngram ,llm_eval, human_eval)
-```
-or 
-```
-python Baselines/<your model>-test.py  --gpu 0 --metric ngram_eval [This will test all samples that use the ngram metric]
+python Baselines/chatglm2-test.py --task_path LEval-data/Closed-ended-tasks/tpo.jsonl or (--task_name tpo)  --gpu 0 --metric ngram_eval (exam_eval, llm_eval, human_eval)
 ```
 where `--metric` means which metric you want to use (e.g., we use `exam_eval` for closed-ended tasks). Details about metrics in L-Eval can be found in the next section. The script will print out the path to the prediction file and you need to press enter to confirm.
-If you are using LLaMa, we also support **Flash Attention** during inference which can save your GPU memory (but cannot speedup decoding). Please add the param `--flash`.
+If you are using LLaMa, we also support FlashAttention in inference which can save your gpu memory, please add the param `--flash`.
 
 #### Step 3. Evaluate the prediction file
-Based on the `metric` passed in Step 2, you can choose one of the scripts from `Evaluation/auto_eval.py`,  `Evaluation/llm_eval.py`, and `Evaluation/web_human_eval.py`. Then run the following command:
+Based on the `metric` passed in Step 2, you can choose one of the script from `Evaluation/auto_eval.py`,  `Evaluation/llm_eval.py`, and `Evaluation/web_human_eval.py`. Then run the following command:
 ```
 python Evaluation/auto_eval.py --pred_file Predictions/exam_eval/<your model>/coursera.pred.jsonl 
 ```
@@ -128,16 +124,16 @@ L-Eval does not only contain open-ended questions (e.g.: multiple choice)  consi
 - Writing Assistance (Assist in writing part of the long document). Example predicted answer: `2 Related Work\n Recent study has shown that ...`
 
 we use the following metrics to evaluate the performance of generation tasks:
-- *N-gram Match Evaluation*,  `"evaluation": "f1" or "rouge"`: Using traditional automatic metrics like F1, ROUGE, BERTScore, etc. The low cost of automatic metrics makes it possible to evaluate all samples in L-Eval. However, considering the problem with these lexical matching metrics,  when the performance gap is not significant, it is hard to tell which model is better. Therefore, we also use human evaluation and Evaluation with LLM.
-- *Human Evaluation*, ` "evaluation": "human"`: The annotators are asked to give a score from `1` to `5`, where 1 means the output is very bad and 5 means the output is very good. We filter **12 long documents with 85 questions** for human evaluation, each of which has 3 references: [human annotated output, GPT4-32k output, and Claude-100k output]([https://github.com/OpenLMLab/LEval/blob/main/Predictions/human_eval](https://github.com/OpenLMLab/LEval/blob/main/Predictions/human_eval/claude.gpt4.ref.jsonl)). During human evaluation, researchers can also understand the performance gap with SOTA LCLMs. You can also use the `python web_for_human_eval.py` website for the human evaluation process.
+- *N-gram Match Evaluation*,  `"evaluation": "f1" or "rouge"`: Using traditional automatic metrics like F1, ROUGE, etc. The low cost of automatic metrics makes it possible to evaluate all samples in L-Eval.
 - *GPT4 Evaluation*, `"evaluation": "LLM"`: We suggest battling with `turbo-16k-0613` and reporting `Win % vs turbo-16k-0613`. If your model is powerful enough, we suggest directly comparing with `Claude-100k`, and reporting `Win % vs Claude-100k`.
-We filter **17 long documents with 96 questions** for GPT4 evaluation considering the cost. 
-- *Turbo3.5 Evaluation (not suggested)*, `"evaluation": "LLM"` and  `"evaluation": "human"`: The evaluation step is similar to GPT4 evaluation which is cheaper but **not accurate**. It serves as an alternative for researchers who do not have access to the GPT-4 API. Samples used in Turbo3.5 Evaluation are from the GPT4 evaluation set and the Human Evaluation set which has **29 long documents with 181 questions**.
+We filter **17 long documents with 96 questions** for GPT4 evaluation considering the cost.
+- *Human Evaluation*, ` "evaluation": "human"`: The annotators are asked to give a score from `1` to `5`, where 1 means the output is very bad and 5 means the output is very good. We filter **12 long documents with 85 questions** for human evaluation, each of which has 3 references: [human-written, GPT4-32k, and Claude-100k]([https://github.com/OpenLMLab/LEval/blob/main/Predictions/human_eval](https://github.com/OpenLMLab/LEval/blob/main/Predictions/human_eval/claude.gpt4.ref.jsonl)). you can visualize and score the results with `python Evaluation/web_for_human_eval.py`.
+- *Turbo3.5 Evaluation (not suggested)*, `"evaluation": "LLM"` and  `"evaluation": "human"`: The evaluation step is similar to GPT4 evaluation which is cheaper but not accurate as GPT4. It serves as an alternative for researchers who do not have access to the GPT-4 API. We involve more samples for Turbo3.5 Evaluation which is **29 long documents with 181 questions**.
 
-#### *Notice: Models are informed of the ground truth length via the instruction*
+#### *Notice: Models are informed of the ground truth length via the instruction for open-ended tasks*
 1. The n-gram matching metrics like f1 are very sensitive to the *length* of ground truth (length bias). In our preliminary experiments, the turbo-16k model achieved very poor score on f1 score because it usually generates a very lengthy answer with an explanation which decreases the f1 score. 
 To reduce the length bias, we suggest adding the length instruction (e.g., please answer with 10 words) while testing ngram metrics: *rouge* and *f1*.
-2. We've observed that LLM evaluators have a tendency to prefer answers that are more comprehensive. In a pairwise comparison scenario, where it's impossible to feed the entire lengthy document, responses with additional, albeit inaccurate details may receive a higher rating. It's vital for the evaluation model to acknowledge that unverified details, not in alignment with the reference answers, should not be perceived as advantageous. The evaluation is predominantly based on the reference answer; hence, aligning the prediction's granularity with the ground truth ensures a more equitable assessment. So we also add the length instruction in LLM evaluation.
+2. We've observed that LLM evaluators have a tendency to prefer answers that are more comprehensive. In a pairwise comparison scenario, where it's impossible to feed the entire lengthy document, responses with additional, albeit inaccurate details may receive a higher rating.  The evaluation is predominantly based on the reference answer; hence, aligning the prediction's granularity with the ground truth ensures a more equitable assessment. 
 
 <a name="eval_script"></a>
 ### Evaluation Scripts
@@ -163,8 +159,8 @@ See the running screenshot [here](#human_demo)
 <a name="submit"></a>
 ## How to Submit
 The leaderboard contains 5 `csv` files: [exam](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/exam_LEval_leaderboard.csv), 
-[f1 score](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/f1_LEval_leaderboard.csv), [rouge](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/rouge_LEval_leaderboard.csv),
-[vs-turbo-16k](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/llm_LEval_leaderboard.csv) and [vs-claude-100k](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/vsClaude_LEval_leaderboard.csv).
+[f1](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/f1_LEval_leaderboard.csv),[rouge](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/rouge_LEval_leaderboard.csv),
+[vsTurbo_llm](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/llm_LEval_leaderboard.csv) and  [vsClaude_llm](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/vsClaude_LEval_leaderboard.csv).
 
 To submit your results on our leaderboard, you can send an email to `levalbenchmark@gmail.com`. 
 #### Your submission should include 4 things:
@@ -193,9 +189,13 @@ We will randomly verify some results with the submitted output files.
     - `win % vs turbo16k` The win rate of your model in the battle with `turbo-16k-0613`
     - `win % vs claude100k`([vsClaude_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/vsClaude_LEval_leaderboard.csv)) The win rate of your model in the battle with `Claude-100k`
 
+<a name="inference"></a>
+## Memory-efficient inference and multiple GPUs inference
+Guidelines are comming soon
 
 ## Other Tools
-### Scripts to generate the output of turbo-16k-0613
+<a name="tool"></a>
+### Using langchain to build retrieval-based baselines
 You can use the scripts in `Tools` to reproduce the output of results run by us. An example of reproducing the output of `turbo-16k-0613` is as follows:
 ```
 python Tools/turbo16k_api_call.py --metric exam_eval (or ngram_eval, human_eval, llm_turbo_eval, llm_gpt4_eval)
@@ -203,13 +203,15 @@ python Tools/turbo16k_api_call.py --metric exam_eval (or ngram_eval, human_eval,
 We also implement the retrieval-based method using [langchain](https://github.com/hwchase17/langchain).
 
 ### A flask-based annotation website for jsonl files
-We have also released a very easy-to-use annotation website for L-Eval. To run this script, you should install flask. The script is used to view and annotate local jsonl files.
+We have also released a very easy-to-use annotation website for L-Eval and make sure you have installed flask.
+Firstly, you have to preprocess your files into a jsonl format which should contains 3 keys `input:str`, `instructions:list` and, `outputs:list` (see the examples in `LEval-data` folder).
+To annotate new instruction-output pairs, please run the script to view and annotate the local jsonl file:
 Start running the website on `127.0.0.1:5000` by:
 ```
-python Tools/web_annotate_jsonl.py --path LEval-data/Generation/meeting_summ.jsonl --mode begin --new_pairs_num 1
+python Tools/web_annotate_jsonl.py --path LEval-data/Generation/meeting_summ.jsonl --mode begin --new_pairs_num 2
 ```
 where `--new_pairs_num` means the number of new QA pairs you want to add and `--mode` (begin or continue) means whether you want to continue from previous annotation results. 
-The input file denoted by `--path` should be a `jsonl` file like the examples in `LEval-data` folder. 
+The input file denoted by `--path` should be a `jsonl` file like the examples in `LEval-data` folder.  In this case, we annotate two new QA pairs based on the long input. After clicking `submit`, the results will be saved to the disk.
 
 #### Example of our annotation website
 <div align="center">
@@ -228,10 +230,7 @@ You can score the outputs from different models via the website. After completin
 
 ## Acknowledgement
 This work is done by Fudan University and The University of Hong Kong.
-
-**Primary contributors**: Chenxin An, Shansan Gong, Ming Zhong, Mukai Li, Jun Zhang, Lingpeng Kong, and Xipeng Qiu.
-
-We also thank Siyu Ren, Qinyuan Cheng, and Zhiyong Wu for their help.
+Primary contributors: Chenxin An, Shansan Gong, Ming Zhong, Mukai Li, Jun Zhang, Lingpeng Kong, and Xipeng Qiu.
 
 **We sincerely appreciate the assistance provided by the following works for L-Eval**:
 - We download the videos to form the long documents from [Coursera website](https://www.coursera.org/)
@@ -239,14 +238,11 @@ We also thank Siyu Ren, Qinyuan Cheng, and Zhiyong Wu for their help.
 - topic retrieval data is collected from [LongChat](https://github.com/DachengLi1/LongChat)
 - QuALITY is from [their official github](https://github.com/nyu-mll/quality)
 - TOEFL Practice Online data comes from [TOEFL-QA](https://github.com/iamyuanchung/TOEFL-QA/tree/master) 
-- Other open-sourced datasets are collected from: [gov_report](https://gov-report-data.github.io/),  [cuad](https://github.com/TheAtticusProject/cuad), [qmsum](https://github.com/Yale-LILY/QMSum),  [Multidoc2dial](https://doc2dial.github.io/multidoc2dial)
+Other open-sourced datasets are collected from: [gov_report](https://gov-report-data.github.io/),  [cuad](https://github.com/TheAtticusProject/cuad), [qmsum](https://github.com/Yale-LILY/QMSum),  [Multidoc2dial](https://doc2dial.github.io/multidoc2dial)
  [narrativeQA](https://github.com/deepmind/narrativeqa), [Natural Questions](https://github.com/google-research-datasets/natural-questions), [review advisor](https://github.com/neulab/ReviewAdvisor), [multi-news](https://github.com/Alex-Fabbri/Multi-News)
 [bigpatent](https://evasharma.github.io/bigpatent/), [SPACE](https://github.com/stangelid/qt), [Qasper](https://github.com/allenai/qasper-led-baseline), [SummScreen](https://github.com/mingdachen/SummScreen)
 
-**Thanks again for their effort!!**
-
-----
-Please do not hesitate to ask any questions about L-Eval. You can reach us via issues or by email at `cxan20@fudan.edu.cn`
+Thanks again for their effort!!
 
 ## Citation
 ```

@@ -37,8 +37,6 @@ def main():
         i = 0
 
         for d in tqdm(data):
-            if "llm" not in args.metric and (d['evaluation'] == 'human' or d['evaluation'] == 'LLM'):
-                continue
             document = d['input']
             instructions = d['instructions']
             outputs = d['outputs']

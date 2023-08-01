@@ -24,10 +24,9 @@ def main():
         for d in tqdm(data):
             document = d['input']
             cnt = 0
-            while num_tokens_from_string(document, tokenizer) > args.max_length:
-                document = " ".join(document.split()[:args.max_length - cnt])  # chunk the input len into 16k tokens
+            while num_tokens_from_string(document, tokenizer) > max_length:
+                document = " ".join(document.split()[:max_length - cnt])  # chunk the input len into 16k tokens
                 cnt += 250
-
 
             instructions = d['instructions']
             outputs = d['outputs']
@@ -43,6 +42,7 @@ def main():
                     context = "Document is as follows. {} \nQuestion: {} "
                     message = header + sys_prompt + context + " \nAnswer:"
                 else:
+                    # adding the length instruction
                     context = "Document is as follows. {} Instruction: {} " + f"\nAnswer this question with {len(out.split())} words."
                     message = header + sys_prompt + context
 
@@ -56,22 +56,21 @@ def main():
                     print(text_inputs)
                     print("----------------- [output] vs [ground truth] -----------------")
                     print('[output]:', save_d[f'{open_source_model}_pred'], "\n\n", '[ground truth]:', save_d['gt'])
-                    input()
                     start_idx += 1
                 fw.write(json.dumps(save_d) + '\n')
         fw.close()
-        # break
 
-# eval:  python Evaluation/auto_eval.py --pred_file Predictions/ngram_eval/chatglm2-6b-8k/ --with_options
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--metric', choices=["llm_turbo_eval", "llm_gpt4_eval", "exam_eval", "ngram_eval", "human_eval"],
                         help='metric name from choices', required=True)
-    parser.add_argument('--max_length', type=int, default=7500, choices=[1500, 3500, 7500])
+    parser.add_argument('--max_length', type=int, default="8k", help='max length of the input, e.g., 2k, 16k')
     parser.add_argument('--gpu', type=int, default=0)
-
+    # set this if you do not want to use data from huggingface
     parser.add_argument('--task_path', type=str, default=None,
                         help='set this if you want test a specific task , example: LEval-data/Closed-ended-tasks/coursera.jsonl or LEval-data/Closed-ended-tasks/ ')
+    # set this if you do not want to test a specific task
     parser.add_argument('--task_name', type=str, default=None,
                         help='set this if you want test a specific task from huggingface, example: coursera')
     parser.add_argument('--mc_tasks', action='store_true', help='set this if you want to test all multiple choice tasks')
@@ -79,12 +78,8 @@ if __name__ == "__main__":
     key_data_pairs = {}
 
     model_path = "THUDM/chatglm2-6b"
-    open_source_model = "chatglm2-6b-8k"
-
-    if args.max_length == 1500:
-        open_source_model = open_source_model.replace("8k", "2k")
-    elif args.max_length == 3500:
-        open_source_model = open_source_model.replace("8k", "4k")
+    open_source_model = "chatglm2-6b-"+ args.max_length
+    max_length = k_to_number(args.max_length) - max_new_tokens
 
     data_save_path = f"Predictions/{args.metric}/{open_source_model}"
     input(f"Your prediction file will be saved to: {data_save_path} \npress enter to confirm")

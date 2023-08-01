@@ -9,13 +9,18 @@ import re
 
 
 
-
+max_new_tokens = 512 # please do not change this for different tasks
 datasets_closed_ended = ["coursera", "quality", "topic_retrieval_longchat", "tpo", "gsm100"]
 with_option_tasks = ["coursera", "quality", "tpo"]
 datasets_open_ended = ["financial_qa", "gov_report_summ", "legal_contract_qa", "meeting_summ", "multidoc_qa",
                        "narrative_qa", "natural_question", "news_summ", "paper_assistant", "patent_summ", "review_summ",
                        "scientific_qa", "tv_show_summ"]
 
+
+
+def k_to_number(k_string):
+    num = float(k_string.rstrip('k'))
+    return int(num * 1000)
 
 def num_tokens_from_string(string: str, tokenizer) -> int:
     encoding = tokenizer(string, return_tensors="pt")
@@ -28,9 +33,8 @@ def to_filename(data_save_path, task_name):
 
 def build_key_data_pairs(args, key_data_pairs, data_save_path):
     os.makedirs(f"Predictions/{args.metric}", exist_ok=True)
-    if "llm" not in args.metric:
+    if ("llm" not in args.metric) and ("human" not in args.metric):
         os.makedirs(data_save_path, exist_ok=True)
-
         if args.task_name:
             data = load_dataset('L4NLP/LEval', args.task_name, split='test')
             key_data_pairs[to_filename(data_save_path, args.task_name)] = data
@@ -66,8 +70,11 @@ def build_key_data_pairs(args, key_data_pairs, data_save_path):
                 data = read_jsonl(f"LEval-data/Open-ended-tasks/{gen_data}.jsonl")
             if args.metric == "llm_turbo_eval":
                 data = [d for d in data if d["evaluation"] == "human" or d["evaluation"] == "LLM"]
-            else:
+            elif "gpt4" in args.metric:
                 data = [d for d in data if d["evaluation"] == "LLM"]
+            else:
+                data = [d for d in data if d["evaluation"] == "human"]
+
             file_name_llm = data_save_path + ".pred.jsonl"
             if file_name_llm not in key_data_pairs:
                 key_data_pairs[file_name_llm] = data
