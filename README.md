@@ -5,12 +5,13 @@
 ------
 ### *L-Eval: Instituting Standardized Evaluation for Long Context Language Models*
 
-L-Eval ([preview on 🤗 HuggingFace Datasets](https://huggingface.co/datasets/L4NLP/LEval) • [check our 📃 paper](https://arxiv.org/abs/2307.11088) ) is a comprehensive long-context language models evaluation suite with 18 long document tasks across multiple domains that require reasoning over long texts, including summarization, question answering, in-context learning with long CoT examples, topic retrieval, and paper writing assistance. L-Eval is a high-quality test set with  411 long documents and  2043 manually labeled query-response pairs.
-
+L-Eval ([preview on 🤗 HuggingFace Datasets](https://huggingface.co/datasets/L4NLP/LEval) • [check our 📃 paper](https://arxiv.org/abs/2307.11088) ) is a comprehensive long-context language models evaluation suite with 18 long document tasks across multiple domains that require reasoning over long texts, including summarization, question answering, in-context learning with long CoT examples, topic retrieval, and paper writing assistance. L-Eval is a high-quality test set with  411 long documents and  2043 manually labeled query-response pairs.   
 Currently, there have been great efforts invested into the expansion of context length for large language models. 
-But it remains unclear whether extending the context can offer substantial gains over traditional methods such as retrieval, and to what extent it improves upon their regular (short context) counterparts  in practical downstream tasks.   
+But it remains unclear whether extending the context can offer substantial gains over traditional methods such as retrieval, and to what extent it improves upon their regular (short context) counterparts  in practical downstream tasks. 
+
 We hope L-Eval could help researchers and developers track the progress of long-context language models (LCLMs) and understand the strengths/shortcomings of different methods.
 
+#### Features of this repo:
 - 🧐 [How to get the data](#use)  
 - 📏 [How to evaluate your models](#eval)  
 - 📨 [How to submit your results](#submit)  
@@ -21,7 +22,8 @@ We hope L-Eval could help researchers and developers track the progress of long-
 
 ## Updates of L-Eval
 - 2023.8.1  We've tested more models, including GPT4, vicuna and Llama2-13B, and updated the results for Turbo-16k by incorporating length instructions. We propose including the expected length of the answer in the instructions (e.g., 'Answer this question in 10 words') for the evaluation of open-ended tasks to reduce length biases. The previously released Turbo-16k did not include this feature, and its performance was slightly lower than that of the current version. Please replace the turbo-16k predicted files with new files committed on 2023.8.1.
-- 2023.8.1  Predictions of LCLMs are available [here]() and judgements from gpt4 are available [here](). We hope these can help researchers analyse different models and metrics. We also add a related work section discussing with other long sequences benchmarks.  
+- 2023.8.1  Predictions of LCLMs tested in this paper are available [here](https://drive.google.com/drive/folders/1pPbIXw0eRD_XZVMixZL4BG_SrMwFH3SH?usp=sharing) and judgements from gpt4 are available [here](https://drive.google.com/drive/folders/1bUGs-2isRLaY5xCz8k3mkKDArX6WxX0u?usp=sharing). 
+We hope these can help researchers analyse different models and metrics. We also add a related work section discussing with other long sequences benchmarks.  
 
 Please check our paper [v2](https://arxiv.org/abs/2307.11088) for more details.
 
@@ -129,7 +131,7 @@ We filter **17 long documents with 96 questions** for GPT4 evaluation considerin
 #### *Notice: Models are informed of the ground truth length via the instruction for open-ended tasks*
 1. The n-gram matching metrics like f1 are very sensitive to the *length* of ground truth (length bias). In our preliminary experiments, the turbo-16k model achieved very poor score on f1 score because it usually generates a very lengthy answer with an explanation which decreases the f1 score. 
 To reduce the length bias, we suggest adding the length instruction (e.g., please answer with 10 words) while testing ngram metrics: *rouge* and *f1*.
-2. The evaluation is predominantly based on the reference answer for LLM evaluator. There is also a length bias that LLM evaluators tend to prefer detailed answers. In a pairwise comparison scenario, where it's impossible to feed the entire document, responses with additional or even inaccurate details may receive a higher rating. It's challenging to judge the adequacy of a detailed summary against a one-sentence reference summary. Therefore, aligning the prediction's granularity with the ground truth ensures a more equitable assessment. 
+2. LLM evaluators also have length biases as they tend to prefer detailed answers. In a pairwise comparison scenario, where it's impossible to feed the entire document, responses with additional or even inaccurate details may receive a higher rating. It's also challenging to judge the adequacy of a detailed summary against a one-sentence reference summary. Therefore, aligning the prediction's granularity with the ground truth ensures a more equitable assessment. 
 
 
 <a name="eval_script"></a>
