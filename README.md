@@ -7,9 +7,8 @@
 
 L-Eval ([preview on 🤗 HuggingFace Datasets](https://huggingface.co/datasets/L4NLP/LEval) • [check our 📃 paper](https://arxiv.org/abs/2307.11088) ) is a comprehensive long-context language models evaluation suite with 18 long document tasks across multiple domains that require reasoning over long texts, including summarization, question answering, in-context learning with long CoT examples, topic retrieval, and paper writing assistance. L-Eval is a high-quality test set with  411 long documents and  2043 manually labeled query-response pairs.
 
-There have been great efforts invested into the expansion of context length for large language models. 
-But it remains unclear whether extending the context can offer substantial gains over traditional methods such as retrieval, and to what extent it improves upon their regular (short context) counterparts  in practical downstream tasks. 
-
+Currently, there have been great efforts invested into the expansion of context length for large language models. 
+But it remains unclear whether extending the context can offer substantial gains over traditional methods such as retrieval, and to what extent it improves upon their regular (short context) counterparts  in practical downstream tasks.   
 We hope L-Eval could help researchers and developers track the progress of long-context language models (LCLMs) and understand the strengths/shortcomings of different methods.
 
 - 🧐 [How to get the data](#use)  
@@ -21,10 +20,8 @@ We hope L-Eval could help researchers and developers track the progress of long-
 - ✏️ [Annotate & filter QA pairs with flask web app](#tool)
 
 ## Updates of L-Eval
-
----------
 - 2023.8.1  We've tested more models, including GPT4, vicuna and Llama2-13B, and updated the results for Turbo-16k by incorporating length instructions. We propose including the expected length of the answer in the instructions (e.g., 'Answer this question in 10 words') for the evaluation of open-ended tasks to reduce length biases. The previously released Turbo-16k did not include this feature, and its performance was slightly lower than that of the current version. Please replace the turbo-16k predicted files with new files committed on 2023.8.1.
-- 2023.8.1  Predictions of LCLMs are available in [Predictions]() to help researchers analyse different models and metrics. We also add a related work section discussing with other long sequences benchmarks.  
+- 2023.8.1  Predictions of LCLMs are available [here]() and judgements from gpt4 are available [here](). We hope these can help researchers analyse different models and metrics. We also add a related work section discussing with other long sequences benchmarks.  
 
 Please check our paper [v2](https://arxiv.org/abs/2307.11088) for more details.
 
@@ -54,8 +51,6 @@ The repository is structured as follows:
 ├── LICENSE
 └── README.md
 ```
-
-
 
 
 ## Quick use
@@ -89,6 +84,7 @@ Each long document has multiple queries and corresponding responses. The format 
 ```
 
 #### Step 2. Generate your prediction files
+We test all the baselines with a single 80G A800 GPU. If your encounter OOM problem, please refer to this [part](#inference)
 To generate the output files, just modify one of baseline scripts, e.g., `longchat-test.py/llama2-chat-test.py` which has the most similar input format with yours. Then replace the model name with your own model and run:
 ```
 python Baselines/chatglm2-test.py --task_path LEval-data/Closed-ended-tasks/tpo.jsonl or (--task_name tpo)  --gpu 0 --metric ngram_eval (exam_eval, llm_eval, human_eval)
@@ -97,7 +93,7 @@ where `--metric` means which metric you want to use (e.g., we use `exam_eval` fo
 If you are using LLaMa, we also support FlashAttention in inference which can save your gpu memory, please add the param `--flash`.
 
 #### Step 3. Evaluate the prediction file
-Based on the `metric` passed in Step 2, you can choose one of the script from `Evaluation/auto_eval.py`,  `Evaluation/llm_eval.py`, and `Evaluation/web_human_eval.py`. Then run the following command:
+Based on the `--metric` passed in Step 2, you can choose one of the script from `Evaluation/auto_eval.py`,  `Evaluation/llm_eval.py`, and `Evaluation/web_human_eval.py`. Then run the following command:
 ```
 python Evaluation/auto_eval.py --pred_file Predictions/exam_eval/<your model>/coursera.pred.jsonl 
 ```
@@ -133,7 +129,8 @@ We filter **17 long documents with 96 questions** for GPT4 evaluation considerin
 #### *Notice: Models are informed of the ground truth length via the instruction for open-ended tasks*
 1. The n-gram matching metrics like f1 are very sensitive to the *length* of ground truth (length bias). In our preliminary experiments, the turbo-16k model achieved very poor score on f1 score because it usually generates a very lengthy answer with an explanation which decreases the f1 score. 
 To reduce the length bias, we suggest adding the length instruction (e.g., please answer with 10 words) while testing ngram metrics: *rouge* and *f1*.
-2. We've observed that LLM evaluators have a tendency to prefer answers that are more comprehensive. In a pairwise comparison scenario, where it's impossible to feed the entire lengthy document, responses with additional, albeit inaccurate details may receive a higher rating.  The evaluation is predominantly based on the reference answer; hence, aligning the prediction's granularity with the ground truth ensures a more equitable assessment. 
+2. The evaluation is predominantly based on the reference answer for LLM evaluator. There is also a length bias that LLM evaluators tend to prefer detailed answers. In a pairwise comparison scenario, where it's impossible to feed the entire document, responses with additional or even inaccurate details may receive a higher rating. It's challenging to judge the adequacy of a detailed summary against a one-sentence reference summary. Therefore, aligning the prediction's granularity with the ground truth ensures a more equitable assessment. 
+
 
 <a name="eval_script"></a>
 ### Evaluation Scripts
@@ -148,12 +145,12 @@ python Evaluation/llm_eval.py --pred_path /path/to/<your model>.pred.jsonl  --ju
 ```
 where `--pred_path` means the prediction file. Example prediction files of `Claude-100k (vs turbo-16k)` are available: [for gpt4 evaluation](https://github.com/OpenLMLab/LEval/tree/main/Predictions/llm_gpt4_eval/claude-100k.pred.jsonl) and [for turbo3.5 evaluation](https://github.com/OpenLMLab/LEval/tree/main/Predictions/llm_turbo_eval/claude-100k.pred.jsonl)
 
-- For human evaluation, we provide a very easy-to-use flask web app running on `localhost 127.0.0.1:5000`. You need to copy all the prediction files `<model_name>.pred.jsonl` (samples with `evaluation: human`) to the `Predictions/human_eval` folder and then run:
+- For human evaluation, we provide a very easy-to-use flask web app running on `localhost 127.0.0.1:5000`. You need to copy your prediction file `<model_name>.pred.jsonl` (samples with `evaluation: human`) to the `Predictions/human_eval` folder and then run:
 ```
 python Evaluation/web_human_eval.py  --mode begin (or continue)
 ```
 where `--mode` denotes whether you are starting a new evaluation or continuing your previous annotation.
-See the running screenshot [here](#human_demo)
+See the running screenshot [here](#human_demo). We  have provided the prediction files from 5 popular models as baselines for human evaluation. if you want to add outputs from other baselines, you can also move the corresponding prediction file to the `Predictions/human_eval` folder.
 
 
 <a name="submit"></a>
