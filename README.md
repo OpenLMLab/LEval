@@ -20,6 +20,12 @@ We hope L-Eval could help researchers and developers track the progress of long-
 - 🧭️ [Memory-efficient inference and multiple GPUs inference](#inference)  
 - ✏️ [Annotate & filter QA pairs with flask web app](#tool)
 
+#### Overview:
+<div align="center">
+<img src="figs/lclms_bar.png" border="0" width=850px/>
+</div>
+
+
 ## Updates of L-Eval
 - 2023.8.1  We've tested more models, including GPT4, vicuna, and Llama2-13B, and updated the results for Turbo-16k by incorporating length instructions to reduce length biases in open-ended tasks. The previously released Turbo-16k did not include this feature, and its performance was slightly lower than that of the current version. Please **replace** the turbo-16k predicted files with new files committed on 2023.8.1. We're sorry for the inconvenience.
 - 2023.8.1  Predictions of LCLMs tested in this paper are available [here](https://drive.google.com/drive/folders/1pPbIXw0eRD_XZVMixZL4BG_SrMwFH3SH?usp=sharing) and judgements from gpt4 are available [here](https://drive.google.com/drive/folders/1bUGs-2isRLaY5xCz8k3mkKDArX6WxX0u?usp=sharing). 
