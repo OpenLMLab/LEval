@@ -9,7 +9,7 @@ L-Eval ([preview on 🤗 HuggingFace Datasets](https://huggingface.co/datasets/L
 Currently, there have been great efforts invested in the expansion of context length for large language models. 
 But it remains unclear whether extending the context can offer substantial gains over traditional methods such as retrieval, and to what extent it improves upon their regular (short context) counterparts  in practical downstream tasks. 
 
-We hope L-Eval could help researchers and developers track the progress of long-context language models (LCLMs) and understand the strengths/shortcomings of different methods.
+We hope L-Eval could help researchers and developers track the progress of long-context language models (LCLMs) and understand the strengths/shortcomings of different methods. We will also keep up with the **latest releases** of instruction-following LCLMs.
 
 #### Features of this repo:
 - 🧐 [How to get the data](#use)  
