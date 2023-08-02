@@ -21,7 +21,7 @@ We hope L-Eval could help researchers and developers track the progress of long-
 - ✏️ [Annotate & filter QA pairs with flask web app](#tool)
 
 ## Updates of L-Eval
-- 2023.8.1  We've tested more models, including GPT4, vicuna and Llama2-13B, and updated the results for Turbo-16k by incorporating length instructions to reduce length biases in open-ended tasks. The previously released Turbo-16k did not include this feature, and its performance was slightly lower than that of the current version. Please replace the turbo-16k predicted files with new files committed on 2023.8.1.
+- 2023.8.1  We've tested more models, including GPT4, vicuna, and Llama2-13B, and updated the results for Turbo-16k by incorporating length instructions to reduce length biases in open-ended tasks. The previously released Turbo-16k did not include this feature, and its performance was slightly lower than that of the current version. Please **replace** the turbo-16k predicted files with new files committed on 2023.8.1. We're sorry for the inconvenience.
 - 2023.8.1  Predictions of LCLMs tested in this paper are available [here](https://drive.google.com/drive/folders/1pPbIXw0eRD_XZVMixZL4BG_SrMwFH3SH?usp=sharing) and judgements from gpt4 are available [here](https://drive.google.com/drive/folders/1bUGs-2isRLaY5xCz8k3mkKDArX6WxX0u?usp=sharing). 
 We hope these can help researchers analyze different models and metrics. We also add a related work section discussing other long sequences benchmarks.  
 
@@ -242,7 +242,7 @@ Other open-sourced datasets are collected from: [gov_report](https://gov-report-
  [narrativeQA](https://github.com/deepmind/narrativeqa), [Natural Questions](https://github.com/google-research-datasets/natural-questions), [review advisor](https://github.com/neulab/ReviewAdvisor), [multi-news](https://github.com/Alex-Fabbri/Multi-News)
 [bigpatent](https://evasharma.github.io/bigpatent/), [SPACE](https://github.com/stangelid/qt), [Qasper](https://github.com/allenai/qasper-led-baseline), [SummScreen](https://github.com/mingdachen/SummScreen)
 
-Thanks again for their effort!!
+Thanks again for their effort!!  
 
 ## Citation
 ```
@@ -255,3 +255,7 @@ Thanks again for their effort!!
       primaryClass={cs.CL}
 }
 ```
+
+Please kindly cite the [original papers](https://github.com/OpenLMLab/LEval/blob/main/citation.bib) when using L-Eval.
+
+
