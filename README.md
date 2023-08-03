@@ -92,8 +92,7 @@ Each long document has multiple queries and corresponding responses. The format 
 ```
 
 #### Step 2. Generate your prediction files
-We test all the baselines with a single 80G A800 GPU. If you encounter OOM problem, please refer to this [part](#inference)
-To generate the output files, just modify one of the baseline scripts, e.g., `longchat-test.py/llama2-chat-test.py` which has the most similar input format with yours. Then replace the model name with your own model and run:
+We test all the baselines with a single 80G A800 GPU. If you encounter the OOM problem, please refer to [multiple GPUs inference](#inference). To generate the output files, just modify one of the baseline scripts, e.g., `longchat-test.py/llama2-chat-test.py` which has the most similar input format to yours. Then replace the model name with your own model and run:
 ```
 python Baselines/chatglm2-test.py --task_path LEval-data/Closed-ended-tasks/tpo.jsonl or (--task_name tpo)  --gpu 0 --metric ngram_eval (exam_eval, llm_eval, human_eval)
 ```
