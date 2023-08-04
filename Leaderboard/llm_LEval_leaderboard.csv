@@ -1,2 +1,0 @@
-﻿Model,[gpt4] n_wins,[gpt4] n_draws,[gpt4] win % vs turbo16k,[turbo3.5] n_wins,[turbo3.5] n_draws,[turbo3.5] win % vs turbo16k,Chunking,Retrieval,In-domain data,In-context examples,Context length
-Claude-100k,"106","46","67.19","187","32","59.02","no","no","no","0", "100k"

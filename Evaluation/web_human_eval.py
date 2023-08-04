@@ -76,7 +76,7 @@ def index():
                     print(json.dumps(evaled_sample), file=fw)
 
             key_to_avg = calc_avg()
-            with open("key_to_counter.json", "w") as f_key:
+            with open(os.path.join(args.path, f"results_from_{annotator_name}.jsonl"), "w") as f_key:
                 f_key.write(json.dumps(key_to_counter))
             for key in key_to_counter:
                 sorted_counter = dict(sorted(key_to_counter[key].items(), key=lambda item: float(item[0])))
@@ -274,17 +274,18 @@ def ground_with_gold(gold_samples, pred_files):
             if "_pred" in key:
                 pred_key = key
                 break
+        print(pred_key)
         assert pred_key is not None
 
         for sample in pred_samples:
             key2pred[sample["query"] + sample["gt"]] = (sample[pred_key], pred_key)
-    for sample in gold_samples:
-        for inst, out in zip(sample["instructions"], sample["outputs"]):
-            pred, pred_key = key2pred[inst + out]
-            if pred_key in sample:
-                sample[pred_key].append(pred)
-            else:
-                sample[pred_key] = [pred]
+        for sample in gold_samples:
+            for inst, out in zip(sample["instructions"], sample["outputs"]):
+                pred, pred_key = key2pred[inst + out]
+                if pred_key in sample:
+                    sample[pred_key].append(pred)
+                else:
+                    sample[pred_key] = [pred]
     return gold_samples
 
 
@@ -303,9 +304,9 @@ def merge_evaled_files():
 
 
 if __name__ == "__main__":
+
     gold_path = "Predictions/human_eval/claude.gpt4.ref.jsonl"
     split_line = "\n ---------------------- Your Score (1~5) ----------------------\n"
-    output_file = "finished.eval.jsonl" # save the annotation result
     key_to_counter = {} # calculate the final result
 
     assert os.path.exists(gold_path)
@@ -318,12 +319,10 @@ if __name__ == "__main__":
                         help="merge the *_cleand.json to a new jsonl file")
     args = parser.parse_args()
     pred_files = glob(f"{args.path}/*.pred.jsonl")
-
     num_of_group = len(pred_files) + 4  # instructions, outputs , gpt4 outputs, claude outputs
     samples = read_jsonl(gold_path)
     samples = ground_with_gold(samples, pred_files)
-    # total_num = len(samples)
-    total_num = 1
+    total_num = len(samples)
     convert_key_to_html(samples)
 
     jsons_dir = os.path.join(args.path, "jsons")
@@ -340,11 +339,14 @@ if __name__ == "__main__":
     json_files = sorted(glob(f'{jsons_dir}/*_example.json'))
     json_files = [jfile for jfile in json_files if not os.path.exists(jfile.replace("_example", "_evaled"))]
     evaled_files = sorted(glob(f'{jsons_dir}/*_evaled.json'))
-    evaled_jsonl_path = os.path.join(args.path, output_file)
+
+    annotator_name = input("Please type your name (e.g., Annotator.1):  ")
+
+    evaled_jsonl_path = os.path.join(args.path, f"files_from_{annotator_name}.jsonl")
     current_num = len(evaled_files)
     ## call merge evaled files
     if args.merge_evaled_files:
         merge_evaled_files()
-
     assert len(json_files) != 0
-    app.run(debug=True, port=5000)
+
+    app.run(debug=False, port=5000)

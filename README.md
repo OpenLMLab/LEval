@@ -15,7 +15,7 @@ We hope L-Eval could help researchers and developers track the progress of long-
 - 🧐 [How to get the data](#use)  
 - 📏 [How to evaluate your models](#eval)  
 - 📨 [How to submit your results](#submit)  
-- 🔖 [View the Leaderboard](https://github.com/OpenLMLab/LEval/tree/main/Leaderboard)  
+- 🔖 [View the Leaderboard](https://l-eval.github.io)  
 - 🖇️ [Build a retrieval-based baseline with Langchain](#tool)  
 - 🧭️ [Memory-efficient inference and multiple GPUs inference](#inference)  
 - ✏️ [Annotate & filter QA pairs with flask web app](#tool)
@@ -97,7 +97,6 @@ We test all the baselines with a single 80G A800 GPU. If you encounter the OOM p
 python Baselines/chatglm2-test.py --task_path LEval-data/Closed-ended-tasks/tpo.jsonl or (--task_name tpo)  --gpu 0 --metric ngram_eval (exam_eval, llm_eval, human_eval)
 ```
 where `--metric` means which metric you want to use (e.g., we use `exam_eval` for closed-ended tasks). Details about metrics in L-Eval can be found in the next section. The script will print out the path to the prediction file and you need to press enter to confirm.
-If you are using LLaMa, we also support FlashAttention in inference which can save your gpu memory, please add the param `--flash`.
 
 #### Step 3. Evaluate the prediction file
 Based on the `--metric` passed in Step 2, you can choose one of the scripts from `Evaluation/auto_eval.py`,  `Evaluation/llm_eval.py`, and `Evaluation/web_human_eval.py`. Then run the following command:
@@ -156,46 +155,55 @@ where `--pred_path` means the prediction file. Example prediction files of `Clau
 ```
 python Evaluation/web_human_eval.py  --mode begin (or continue)
 ```
-where `--mode` denotes whether you are starting a new evaluation or continuing your previous annotation.
+where `--mode` denotes whether you are starting a new evaluation or continuing your previous annotation.  Feel free to close the browser and set `--mode continue` to continue from your last annotation. Once running the script, you have to provide the annotator name and your annotation results will be saved to `Predictions/human_eval/annotation_from_<name>.jsonl`.
 See the running screenshot [here](#human_demo). We  have provided the prediction files from 5 popular models as baselines for human evaluation. if you want to add outputs from other baselines, you can also move the corresponding prediction file to the `Predictions/human_eval` folder.
 
 
 <a name="submit"></a>
 ## How to Submit
-The leaderboard contains 5 `csv` files: [exam](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/exam_LEval_leaderboard.csv), 
-[f1](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/f1_LEval_leaderboard.csv),[rouge](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/rouge_LEval_leaderboard.csv),
-[vsTurbo_llm](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/llm_LEval_leaderboard.csv) and  [vsClaude_llm](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/vsClaude_LEval_leaderboard.csv).
+The [leaderboard](https://l-eval.github.io) contains 5 parts: `Exact Match, GPT-4 evaluator, GPT-3.5 Evaluator, F1, ROUGE`,
 
 To submit your results on our leaderboard, you can send an email to `levalbenchmark@gmail.com`. 
 #### Your submission should include 4 things:
 
 * Metadata: Model name, number of parameters, and links to your paper/blog/GitHub/demo.
 * Output files: Please submit 1 folder named with your model (e.g., `Predictions/turbo-16k-0613` ) for ngram matching evaluation and a jsonl file, e.g., `Predictions/LLM_Eval/claude100k.pred.jsonl`(The file naming format is `model_name.pred.jsonl`) for  LLM evaluation, as described in [Evaluation scripts section](#eval).
-* Results: Please submit the results produced by our evaluation scripts. Results should contain all keys in the [csv file](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard).
+* Results: Please submit the results produced by our evaluation scripts. Results should contain all keys in the  [leaderboard](https://l-eval.github.io).
 * Judgements from turbo3.5 and gpt4 (The output file produced by `llm_eval.py`)
 
 We will randomly verify some results with the submitted output files.
 
 #### Explanation of keys in the leaderboard
 
-1. Keys in [exam_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/exam_LEval_leaderboard.csv)
-    - `Avg`:  averaging over each dataset’s overall performance score.
-    - `Retrieval`: whether using retrieval
-    - `In-domain data`: whether incorporating in-domain data (e.g.  meetings in qmsum, stories from narrative_qa) into finetuning. Data in L-Eval should NEVER be involved in training.
-    - `Context length`: the maximum context length of your model.
-    - `Multi-turn Dial`: whether supporting multiple rounds of dialogue.
-3. Keys in [f1_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/f1_LEval_leaderboard.csv) and [rouge_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/rouge_LEval_leaderboard.csv)
-    -  `F1 avg`:  the average over each dataset’s overall F1 score on QA-style tasks
-    -  `ROUGE avg`: the average over each dataset’s overall ROUGE score on Summarization-style tasks. We report `ROUGE-1`, `ROUGE-2` and `ROUGE-L`
-4. Keys in [llm_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/llm_LEval_leaderboard.csv).
+1. Keys in [Exact Match](https://l-eval.github.io)
+   - `Avg`:  averaging over 4 datasets performance score.
+   - `Max-Ctx`: the maximum context length of your model.
+   - `Tokens`: the number of input tokens in experiments.
+   - `Ret.`: whether using retrieval.
+   - `PE`: whether doing prompt engineering (e.g., modifying the original prompt to improve the performance,  providing in-context examples).
+   - `IDD`: whether using in-domain data (e.g.  data from qmsum, narrative_qa training set) into further finetuning. **Please don't hack this evaluation set**. But considering most of the sources are open, if your dataset potentially contains some in-domain data, you don't need to remove them. In that case, please set this value to 'yes'. If the construction of the IFT data is not transparent, you can leave it blank.
+2. Keys in [F1_and ROUGE](https://l-eval.github.io) 
+   - `F1 avg`:  the average over each dataset’s overall F1 score on QA-style tasks
+   - `ROUGE avg`: the average over each dataset’s overall ROUGE-L score on Summarization-style tasks.
+   - `Length`: the average length of the generated outputs.
+3. Keys in [GPT-4/3.5 Evaluator](https://l-eval.github.io)
     - `n_wins`: number of wins including results of swapping the position of two answers.
     - `n_draws` number of draws including results of swapping the position of two answers.
     - `win % vs turbo16k` The win rate of your model in the battle with `turbo-16k-0613`
-    - `win % vs claude100k`([vsClaude_LEval_leaderboard.csv](https://github.com/OpenLMLab/LEval/blob/main/Leaderboard/vsClaude_LEval_leaderboard.csv)) The win rate of your model in the battle with `Claude-100k`
+    - `Length`: the average length of the generated outputs.
 
 <a name="inference"></a>
 ## Memory-efficient inference and multiple GPUs inference
-Guidelines are coming soon
+#### Using Flash Attention during inference 🚀
+Please first try Flash Attention if you have a 80G GPU and if you still encounter OOM, please refer to the next section.
+If you are using LLaMA, we also support FlashAttention in inference which can save your gpu memory, please add the param `--flash`. For other models the code is similar.
+1. flash-attention v1
+
+2. flash-attention v2
+
+#### Memory-efficient inference with [LightLLM](https://github.com/ModelTC/lightllm) 🚂
+
+
 
 ## Other Tools
 <a name="tool"></a>
