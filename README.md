@@ -15,10 +15,10 @@ We hope L-Eval could help researchers and developers track the progress of long-
 - 🧐 [How to get the data](#use)  
 - 📏 [How to evaluate your models](#eval)  
 - 📨 [How to submit your results](#submit)  
-- 🔖 [View the Leaderboard](https://l-eval.github.io)  
+- 🔖 [View the Leaderboard](https://l-eval.github.io) 
+- 🧭️ [Memory-efficient inference and multiple GPUs inference](#inference)
 - 🖇️ [Build a retrieval-based baseline with Langchain](#tool)  
-- 🧭️ [Memory-efficient inference and multiple GPUs inference](#inference)  
-- ✏️ [Annotate & filter QA pairs with flask web app](#tool)
+- ✏️ [Annotate & filter QA pairs from local jsonl files with web](#tool)
 
 #### Overview:
 <div align="center">
@@ -27,6 +27,7 @@ We hope L-Eval could help researchers and developers track the progress of long-
 
 
 ## Updates of L-Eval
+- 2023.8.4  The [leaderboard](https://l-eval.github.io) is ready now 🎉 
 - 2023.8.1  We've tested more models, including GPT4, vicuna, and Llama2-13B, and updated the results for Turbo-16k by incorporating length instructions to reduce length biases in open-ended tasks. The previously released Turbo-16k did not include this feature, and its performance was slightly lower than that of the current version. Please **replace** the turbo-16k predicted files with new files committed on 2023.8.1. We're sorry for the inconvenience.
 - 2023.8.1  Predictions of LCLMs tested in this paper are available [here](https://drive.google.com/drive/folders/1pPbIXw0eRD_XZVMixZL4BG_SrMwFH3SH?usp=sharing) and judgements from gpt4 are available [here](https://drive.google.com/drive/folders/1bUGs-2isRLaY5xCz8k3mkKDArX6WxX0u?usp=sharing). 
 We hope these can help researchers analyze different models and metrics. We also add a related work section discussing other long sequences benchmarks.  
@@ -39,7 +40,6 @@ The repository is structured as follows:
 ```bash
 ├── Baselines/ # scripts to generate the prediction files with baseline models
 ├── Evaluation/ # evaluation scripts
-├── Leaderboard/ # csv files of results
 ├── LEval-data/ # test samples
 │   ├── Exam/ # exact match tasks (like multiple-choice)
 │   │   ├── test_file.jsonl 
