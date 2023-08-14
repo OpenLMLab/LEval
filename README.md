@@ -211,15 +211,10 @@ python setup.py install
 
 ```
 
-1. flash-attention v1
 ```
 python Baselines/longchat-test.py --task_path LEval-data/Open-ended-tasks/narrative.jsonl --max_length 16k --gpu 0 --metric ngram_eval --flash 
 ```
 
-2. flash-attention v2
-```
-python Baselines/longchat-test.py --task_path LEval-data/Open-ended-tasks/narrative.jsonl  --gpu 0 --metric ngram_eval  --flashv2
-```
 #### Memory-efficient inference with [LightLLM](https://github.com/ModelTC/lightllm) 🚂
 
 Using lightLLM can make the inference procedure on a single 
