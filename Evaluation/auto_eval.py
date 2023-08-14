@@ -240,6 +240,7 @@ def _compute_helper(
 
 
 
+
 def postprocess_output(response):
     # Use regular expression to replace anything that is not A, B, C or D with an empty string
     if response in "ABCD":
@@ -249,10 +250,20 @@ def postprocess_output(response):
             if chr in "ABCD":
                 return chr
     # retrieve multiple correct answers (for coursera)
+    cleaned_str = ""
+    for chr in response:
+        if chr in "ABCD":
+            cleaned_str += chr
+            response = response[1:]
+        else:
+            break
+    if len(cleaned_str) > 1:
+        return cleaned_str
+    # retrieve multiple correct answers (for coursera)
     response = response.split("Question")[0]
     pattern = r"\s*[A-Z](?=[\s.)])"
     options = re.findall(pattern, response)
-    cleaned_str = ' '.join(options).strip()
+    cleaned_str += ' '.join(options).strip()
     cleaned_str = re.sub(r'[^A-D]', '', cleaned_str)
     s_set = set(cleaned_str)
     cleaned_str = "".join(sorted(s_set))

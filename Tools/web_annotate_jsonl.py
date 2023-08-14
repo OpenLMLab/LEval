@@ -11,7 +11,7 @@ from glob import glob
 import argparse
 import re
 import shutil
-from utils import read_jsonl
+from jsonl_utils import read_jsonl
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'Thisisasecret!'

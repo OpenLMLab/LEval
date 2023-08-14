@@ -16,7 +16,7 @@ We hope L-Eval could help researchers and developers track the progress of long-
 - 📏 [How to evaluate your models](#eval)  
 - 📨 [How to submit your results](#submit)  
 - 🔖 [View the Leaderboard](https://l-eval.github.io) 
-- 🧭️ [Memory-efficient inference and multiple GPUs inference](#inference)
+- 🧭️ [Handle CUDA OOM with memory-efficient inference](#inference)
 - 🖇️ [Build a retrieval-based baseline with Langchain](#tool)  
 - ✏️ [Annotate & filter QA pairs from local jsonl files with web](#tool)
 
@@ -27,8 +27,9 @@ We hope L-Eval could help researchers and developers track the progress of long-
 
 
 ## Updates of L-Eval
+- 2023.8.14 We have tested some recently released models based on Llama2 via NTK and PI. We have updated Coursera and please download the newest version. We're sorry for the inconvenience.
 - 2023.8.4  The [leaderboard](https://l-eval.github.io) is ready now 🎉 
-- 2023.8.1  We've tested more models, including GPT4, vicuna, and Llama2-13B, and updated the results for Turbo-16k by incorporating length instructions to reduce length biases in open-ended tasks. The previously released Turbo-16k did not include this feature, and its performance was slightly lower than that of the current version. Please **replace** the turbo-16k predicted files with new files committed on 2023.8.1. We're sorry for the inconvenience.
+- 2023.8.1  We've tested more models, including GPT4, vicuna, and Llama2-13B, and updated the results for Turbo-16k by incorporating length instructions to reduce length biases in open-ended tasks. The previously released Turbo-16k did not include this feature, and its performance was slightly lower than that of the current version. Please **replace** the turbo-16k predicted files with new files committed on 2023.8.1. 
 - 2023.8.1  Predictions of LCLMs tested in this paper are available [here](https://drive.google.com/drive/folders/1pPbIXw0eRD_XZVMixZL4BG_SrMwFH3SH?usp=sharing) and judgements from gpt4 are available [here](https://drive.google.com/drive/folders/1bUGs-2isRLaY5xCz8k3mkKDArX6WxX0u?usp=sharing). 
 We hope these can help researchers analyze different models and metrics. We also add a related work section discussing other long sequences benchmarks.  
 
@@ -94,7 +95,7 @@ Each long document has multiple queries and corresponding responses. The format 
 #### Step 2. Generate your prediction files
 We test all the baselines with a single 80G A800 GPU. If you encounter the OOM problem, please refer to [multiple GPUs inference](#inference). To generate the output files, just modify one of the baseline scripts, e.g., `longchat-test.py/llama2-chat-test.py` which has the most similar input format to yours. Then replace the model name with your own model and run:
 ```
-python Baselines/chatglm2-test.py --task_path LEval-data/Closed-ended-tasks/tpo.jsonl or (--task_name tpo)  --gpu 0 --metric ngram_eval (exam_eval, llm_eval, human_eval)
+python Baselines/chatglm2-test.py --task_path LEval-data/Closed-ended-tasks/tpo.jsonl or (--task_name tpo)  --gpu 0 --metric exam_eval (exam_eval, ngram , llm_gpt4_eval, llm_turbo_eval, human_eval)
 ```
 where `--metric` means which metric you want to use (e.g., we use `exam_eval` for closed-ended tasks). Details about metrics in L-Eval can be found in the next section. The script will print out the path to the prediction file and you need to press enter to confirm.
 
@@ -195,14 +196,33 @@ We will randomly verify some results with the submitted output files.
 <a name="inference"></a>
 ## Memory-efficient inference and multiple GPUs inference
 #### Using Flash Attention during inference 🚀
-Please first try Flash Attention if you have a 80G GPU and if you still encounter OOM, please refer to the next section.
-If you are using LLaMA, we also support FlashAttention in inference which can save your gpu memory, please add the param `--flash`. For other models the code is similar.
+Please first try [Flash Attention](https://github.com/Dao-AILab/flash-attention) if you have a **80G** GPU. Based on our experiments, it works well when the sequence length is less than 16k.  if you still encounter OOM, please refer to the next section.
+If you are using LLaMA, we support FlashAttention in inference which can save your gpu memory, please add the param `--flash`, `--flashv2`.  The code is similar for other models.
+
+If you encounter installation issues, it's likely due to the CUDA and Torch versions mismatch. Here is my running env:
+```
+python>=3.8
+torch==1.13.1+cu117
+CUDA Driver Version: 525.105.17   CUDA Toolkit: 11.7
+git clone https://github.com/Dao-AILab/flash-attention.git
+cd flash-attention/
+[if flashAttn-v1] git checkout tags/v1.0.0 
+python setup.py install
+
+```
+
 1. flash-attention v1
+```
+python Baselines/longchat-test.py --task_path LEval-data/Open-ended-tasks/narrative.jsonl --max_length 16k --gpu 0 --metric ngram_eval --flash 
+```
 
 2. flash-attention v2
-
+```
+python Baselines/longchat-test.py --task_path LEval-data/Open-ended-tasks/narrative.jsonl  --gpu 0 --metric ngram_eval  --flashv2
+```
 #### Memory-efficient inference with [LightLLM](https://github.com/ModelTC/lightllm) 🚂
 
+Using lightLLM can make the inference procedure on a single 
 
 
 ## Other Tools
