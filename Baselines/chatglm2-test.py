@@ -82,7 +82,6 @@ if __name__ == "__main__":
     max_length = k_to_number(args.max_length) - max_new_tokens
     if max_length > 8000:
         model_path = "THUDM/chatglm2-6b-32k"
-        open_source_model = "chatglm2-6b-32k"
 
     data_save_path = f"Predictions/{args.metric}/{open_source_model}"
     input(f"Your prediction file will be saved to: {data_save_path}  , press enter to confirm...")
