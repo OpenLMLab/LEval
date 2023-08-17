@@ -3,13 +3,76 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, LlamaForCausalLM
 # Code adapted from https://huggingface.co/kaiokendev/superhot-13b-8k-no-rlhf-test/blob/main/llama_rope_scaled_monkey_patch.py
 
 from functools import partial
-
+import transformers
 import torch
 from llama_flash_attn_monkey_patch import replace_llama_attn_with_flash_attn
 import argparse
 from LEval_config import *
 from tqdm import tqdm
-import os
+
+
+class CondenseRotaryEmbedding(torch.nn.Module):
+    def __init__(
+        self, dim, ratio, max_position=4096,  max_position_embeddings=4096, base=10000, device=None
+    ):
+        super().__init__()
+        inv_freq = 1.0 / (base ** (torch.arange(0, dim, 2).float().to(device) / dim))
+        self.register_buffer("inv_freq", inv_freq)
+
+        # Build here to make `torch.jit.trace` work.
+        self.ratio = ratio
+        max_position *= ratio
+        self.max_seq_len_cached = max_position
+        # print(f"Monkey Patching condense ratio {ratio}")
+        t = (
+            torch.arange(
+                self.max_seq_len_cached,
+                device=self.inv_freq.device,
+                dtype=self.inv_freq.dtype,
+            )
+            / ratio
+        )
+        freqs = torch.einsum("i,j->ij", t, self.inv_freq)
+        # Different from paper, but it uses a different permutation in order to obtain the same calculation
+        emb = torch.cat((freqs, freqs), dim=-1)
+        dtype = torch.get_default_dtype()
+        self.register_buffer(
+            "cos_cached", emb.cos()[None, None, :, :].to(dtype), persistent=False
+        )
+        self.register_buffer(
+            "sin_cached", emb.sin()[None, None, :, :].to(dtype), persistent=False
+        )
+
+    def forward(self, x, seq_len=None):
+        # x: [bs, num_attention_heads, seq_len, head_size]
+        # This `if` block is unlikely to be run after we build sin/cos in `__init__`. Keep the logic here just in case.
+        if seq_len > self.max_seq_len_cached:
+            self.max_seq_len_cached = seq_len
+            t = (
+                torch.arange(
+                    self.max_seq_len_cached, device=x.device, dtype=self.inv_freq.dtype
+                )
+                / self.ratio
+            )
+            freqs = torch.einsum("i,j->ij", t, self.inv_freq)
+            # Different from paper, but it uses a different permutation in order to obtain the same calculation
+            emb = torch.cat((freqs, freqs), dim=-1).to(x.device)
+            self.register_buffer(
+                "cos_cached", emb.cos()[None, None, :, :].to(x.dtype), persistent=False
+            )
+            self.register_buffer(
+                "sin_cached", emb.sin()[None, None, :, :].to(x.dtype), persistent=False
+            )
+        return (
+            self.cos_cached[:, :, :seq_len, ...].to(dtype=x.dtype),
+            self.sin_cached[:, :, :seq_len, ...].to(dtype=x.dtype),
+        )
+
+
+def replace_llama_with_condense(ratio):
+    transformers.models.llama.modeling_llama.LlamaRotaryEmbedding = partial(
+        CondenseRotaryEmbedding, ratio=ratio, max_position=4096
+    )
 
 
 def main():
@@ -80,7 +143,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--metric', choices=["llm_turbo_eval", "llm_gpt4_eval", "exam_eval", "ngram_eval", "human_eval"],
                         help='metric name from choices', required=True)
-    parser.add_argument('--max_length', type=int, default="2k", help='max length of the input, e.g., 2k, 16k')
+    parser.add_argument('--max_length', default="2k", help='max length of the input, e.g., 2k, 16k')
     parser.add_argument('--gpu', type=int, default=0)
     # set this if you do not want to use data from huggingface
     parser.add_argument('--task_path', type=str, default=None,
@@ -96,15 +159,24 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # 7b / 13b
-    model_path = f"lmsys/vicuna-{args.scale}-v1.3"
-    open_source_model = f"vicuna-{args.scale}-"+args.max_length
-    max_new_tokens = k_to_number(args.max_length) - max_new_tokens
+
+    max_length = k_to_number(args.max_length) - max_new_tokens
+
+    if max_length > 2048:
+        model_path = f"lmsys/vicuna-{args.scale}-v1.5-16k"
+        open_source_model = f"vicuna1.5-{args.scale}-" + args.max_length
+        replace_llama_with_condense(4)
+    else:
+        model_path = f"lmsys/vicuna-{args.scale}-v1.3"
+        open_source_model = f"vicuna1.3-{args.scale}-" + args.max_length
+
+
     if args.flash:
         replace_llama_attn_with_flash_attn()
-        open_source_model = open_source_model + "-flash"
+        open_source_model = open_source_model
 
     data_save_path = f"Predictions/{args.metric}/{open_source_model}"
-    input(f"Your prediction file will be saved to: {data_save_path} \npress enter to confirm")
+    input(f"Your prediction file will be saved to: {data_save_path}  , press enter to confirm...")
 
     device = torch.device(f'cuda:{args.gpu}' if torch.cuda.is_available() else 'cpu')
     tokenizer = AutoTokenizer.from_pretrained(model_path, force_download=True, resume_download=False)

@@ -27,9 +27,8 @@ We hope L-Eval could help researchers and developers track the progress of long-
 
 
 ## Updates of L-Eval
-- 2023.8.14 We have tested some recently released models based on **Llama2** via NTK and PI. Coursera has been updated to improve the difficulty and please download the newest version. We're sorry for the inconvenience.
+- 2023.8.17 We have tested some recently released models based on **Llama2** via NTK (LLama2-chat w/o training) [[code]](https://github.com/OpenLMLab/LEval/blob/main/Baselines/llama2-chat-test.py) and PI (vicuna1.5-16k trained on ShareGPT)[[code]](https://github.com/OpenLMLab/LEval/blob/main/Baselines/vicuna-test.py). Coursera has been updated to improve the difficulty and please download the newest version. We're sorry for the inconvenience. We are also annotating a new code test set and the results for LLama2 model and the new dataset will be released soon.
 - 2023.8.4  The [leaderboard](https://l-eval.github.io) is ready now 🎉 
-- 2023.8.1  We've tested more models, including GPT4, vicuna, and Llama2-13B, and updated the results for Turbo-16k by incorporating length instructions to reduce length biases in open-ended tasks. The previously released Turbo-16k did not include this feature, and its performance was slightly lower than that of the current version. Please **replace** the turbo-16k predicted files with new files committed on 2023.8.1. 
 - 2023.8.1  Predictions of LCLMs tested in this paper are available [here](https://drive.google.com/drive/folders/1pPbIXw0eRD_XZVMixZL4BG_SrMwFH3SH?usp=sharing) and judgements from gpt4 are available [here](https://drive.google.com/drive/folders/1bUGs-2isRLaY5xCz8k3mkKDArX6WxX0u?usp=sharing). 
 We hope these can help researchers analyze different models and metrics. We also add a related work section discussing other long sequences benchmarks.  
 
@@ -198,6 +197,7 @@ We will randomly verify some results with the submitted output files.
 #### Using Flash Attention during inference 🚀
 Please first try [Flash Attention](https://github.com/Dao-AILab/flash-attention) if you have a **80G** GPU. Based on our experiments, it works well when the sequence length is less than 16k.  if you still encounter OOM, please refer to the next section.
 If you are using LLaMA, we support FlashAttention in inference which can save your gpu memory, please add the param `--flash`, `--flashv2`.  The code is similar for other models.
+Flash attention for Chatglm is implemented with torch2.0. Please ensure that you have successfully installed it.
 
 If you encounter installation issues, it's likely due to the CUDA and Torch versions mismatch. Here is my running env:
 ```
@@ -208,7 +208,6 @@ git clone https://github.com/Dao-AILab/flash-attention.git
 cd flash-attention/
 [if flashAttn-v1] git checkout tags/v1.0.0 
 python setup.py install
-
 ```
 
 ```
@@ -260,6 +259,8 @@ You can score the outputs from different models via the website. After completin
 This work is done by Fudan University and The University of Hong Kong.
 Primary contributors: Chenxin An, Shansan Gong, Ming Zhong, Mukai Li, Jun Zhang, Lingpeng Kong, and Xipeng Qiu.
 
+We also thank the following people for their valuable suggestions and contributions: Siyu Ren, Zhiyong Wu,  Qinyuan Cheng, Bo Wang
+
 **We sincerely appreciate the assistance provided by the following works for L-Eval**:
 - We download the videos to form the long documents from [Coursera website](https://www.coursera.org/)
 - we extract 100 math problems from  [GSM8k](https://github.com/openai/grade-school-math) and we use 8 long examples from [{chain-of-thought-hub](https://github.com/FranxYao/chain-of-thought-hub/blob/main/gsm8k/lib_prompt/prompt_hardest.txt)
@@ -270,6 +271,7 @@ Other open-sourced datasets are collected from: [gov_report](https://gov-report-
  [narrativeQA](https://github.com/deepmind/narrativeqa), [Natural Questions](https://github.com/google-research-datasets/natural-questions), [review advisor](https://github.com/neulab/ReviewAdvisor), [multi-news](https://github.com/Alex-Fabbri/Multi-News)
 [bigpatent](https://evasharma.github.io/bigpatent/), [SPACE](https://github.com/stangelid/qt), [Qasper](https://github.com/allenai/qasper-led-baseline), [SummScreen](https://github.com/mingdachen/SummScreen)
 
+Please kindly cite the [original papers](https://github.com/OpenLMLab/LEval/blob/main/citation.bib) when using L-Eval.
 Thanks again for their effort!!  
 
 ## Citation
@@ -284,6 +286,5 @@ Thanks again for their effort!!
 }
 ```
 
-Please kindly cite the [original papers](https://github.com/OpenLMLab/LEval/blob/main/citation.bib) when using L-Eval.
 
 

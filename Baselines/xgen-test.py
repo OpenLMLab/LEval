@@ -75,7 +75,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--metric', choices=["llm_turbo_eval", "llm_gpt4_eval", "exam_eval", "ngram_eval", "human_eval"],
                         help='metric name from choices', required=True)
-    parser.add_argument('--max_length', type=int, default="8k", help='max length of the input, e.g., 2k, 16k')
+    parser.add_argument('--max_length', default="8k", help='max length of the input, e.g., 2k, 16k')
     parser.add_argument('--gpu', type=int, default=0)
     # set this if you do not want to use data from huggingface
     parser.add_argument('--task_path', type=str, default=None,
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     max_length = k_to_number(args.max_length) - max_new_tokens
 
     data_save_path = f"Predictions/{args.metric}/{open_source_model}"
-    input(f"Your prediction file will be saved to: {data_save_path} \npress enter to confirm")
+    input(f"Your prediction file will be saved to: {data_save_path}  , press enter to confirm...")
 
     tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16).to(

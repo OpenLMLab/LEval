@@ -142,7 +142,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--metric', choices=["llm_turbo_eval", "llm_gpt4_eval", "exam_eval", "ngram_eval", "human_eval"],
                         help='metric name from choices', required=True)
-    parser.add_argument('--max_length', type=int, default="16k", help='max length of the input, e.g., 2k, 16k')
+    parser.add_argument('--max_length', default="16k", help='max length of the input, e.g., 2k, 16k')
     parser.add_argument('--gpu', type=int, default=0)
     # set this if you do not want to use data from huggingface
     parser.add_argument('--task_path', type=str, default=None,
@@ -165,10 +165,9 @@ if __name__ == "__main__":
 
     if args.flash:
         replace_llama_attn_with_flash_attn()
-        open_source_model = open_source_model + "-flash"
 
     data_save_path = f"Predictions/{args.metric}/{open_source_model}"
-    input(f"Your prediction file will be saved to: {data_save_path} \npress enter to confirm")
+    input(f"Your prediction file will be saved to: {data_save_path}  , press enter to confirm...")
 
     device = torch.device(f'cuda:{args.gpu}' if torch.cuda.is_available() else 'cpu')
     tokenizer = AutoTokenizer.from_pretrained(model_path)

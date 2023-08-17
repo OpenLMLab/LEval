@@ -1,11 +1,89 @@
+import math
+from functools import partial
+
 import torch
 from transformers import LlamaTokenizer, LlamaForCausalLM
-
+import transformers
 # -*- coding:utf-8 -*-
 import argparse
 from llama_flash_attn_monkey_patch import replace_llama_attn_with_flash_attn
 from LEval_config import *
 from tqdm import tqdm
+
+
+class NTKRotaryEmbedding(torch.nn.Module):
+    def __init__(
+        self, dim, alpha, max_position=4096, max_position_embeddings = 4096, base=10000, device=None
+    ):
+        super().__init__()
+        self.base = base
+        self.alpha = alpha
+        self.update_base = base
+        self.dim  = dim
+        inv_freq = 1.0 / (base ** (torch.arange(0, dim, 2).float().to(device) / dim))
+        self.register_buffer("inv_freq", inv_freq)
+
+        # Build here to make `torch.jit.trace` work.
+        self.max_seq_len_cached = max_position
+        # print(f"Monkey Patching condense ratio {ratio}")
+        t = (
+            torch.arange(
+                self.max_seq_len_cached,
+                device=self.inv_freq.device,
+                dtype=self.inv_freq.dtype,
+            )
+        )
+        freqs = torch.einsum("i,j->ij", t, self.inv_freq)
+        # Different from paper, but it uses a different permutation in order to obtain the same calculation
+        emb = torch.cat((freqs, freqs), dim=-1)
+        dtype = torch.get_default_dtype()
+        self.register_buffer(
+            "cos_cached", emb.cos()[None, None, :, :].to(dtype), persistent=False
+        )
+        self.register_buffer(
+            "sin_cached", emb.sin()[None, None, :, :].to(dtype), persistent=False
+        )
+
+
+    def forward(self, x, seq_len=None):
+        # update the base based on prompt:
+        if seq_len > self.max_seq_len_cached:
+            if self.alpha == 1:
+                if x.shape[2] > self.max_seq_len_cached:
+                    scale_up = math.ceil((seq_len + max_new_tokens) / self.max_seq_len_cached) # prompt + max_len
+                    # if  scale_up != 2:
+                    #     input(f"{scale_up} {seq_len + 512}, {self.max_seq_len_cached}")
+                    self.update_base = self.base * (scale_up ** (self.dim / (self.dim-2)))
+            else:
+                self.update_base = self.base * (self.alpha ** (self.dim / (self.dim - 2)))
+
+            # x: [bs, num_attention_heads, seq_len, head_size]
+            # This `if` block is unlikely to be run after we build sin/cos in `__init__`. Keep the logic here just in case.
+            inv_freq = 1.0 / (self.update_base ** (torch.arange(0, self.dim, 2).float().to(device) / self.dim))
+            t = (
+                torch.arange(
+                    seq_len, device=x.device, dtype=self.inv_freq.dtype
+                )
+            )
+            freqs = torch.einsum("i,j->ij", t, inv_freq)
+            # Different from paper, but it uses a different permutation in order to obtain the same calculation
+            emb = torch.cat((freqs, freqs), dim=-1).to(x.device)
+            self.register_buffer(
+                "cos_cached", emb.cos()[None, None, :, :].to(x.dtype), persistent=False
+            )
+            self.register_buffer(
+                "sin_cached", emb.sin()[None, None, :, :].to(x.dtype), persistent=False
+            )
+        return (
+            self.cos_cached[:, :, :seq_len, ...].to(dtype=x.dtype),
+            self.sin_cached[:, :, :seq_len, ...].to(dtype=x.dtype),
+        )
+
+
+def replace_llama_with_ntkEmb():
+    transformers.models.llama.modeling_llama.LlamaRotaryEmbedding = partial(
+        NTKRotaryEmbedding, max_position=4096, alpha=args.alpha
+    )
 
 
 def main():
@@ -67,7 +145,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--metric', choices=["llm_turbo_eval", "llm_gpt4_eval", "exam_eval", "ngram_eval", "human_eval"],
                         help='metric name from choices', required=True)
-    parser.add_argument('--max_length', type=int, default="4k", help='max length of the input, e.g., 2k, 16k')
+    parser.add_argument('--max_length', default="4k", help='max length of the input, e.g., 2k, 16k')
     parser.add_argument('--gpu', type=int, default=0)
     # set this if you do not want to use data from huggingface
     parser.add_argument('--task_path', type=str, default=None,
@@ -75,23 +153,34 @@ if __name__ == "__main__":
     # set this if you do not want to test a specific task
     parser.add_argument('--task_name', type=str, default=None,
                         help='set this if you want test a specific task from huggingface, example: coursera')
+
     parser.add_argument('--mc_tasks', action='store_true', help='set this if you want to test all multiple choice tasks')
 
     # for llama based model
     parser.add_argument('--scale', default='7b', choices=['7b', '13b'])
     parser.add_argument('--flash', action='store_true', help='set this if you want to use flash attention')
+
+    # if you want to use NTK embedding
+    parser.add_argument('--alpha', type=int, help='using fix ntk to extend alpha times context length ', default=1)
+    parser.add_argument('--ntk_dyn', action='store_true', help='set this if you want to use dynamic ntk') # alpha is dynamically determined by the forward x => len(x) / 4k
     args = parser.parse_args()
 
     model_path = f"meta-llama/Llama-2-{args.scale}-chat-hf"
     open_source_model = f"llama2-{args.scale}-chat-" + args.max_length
+    if args.alpha > 1:
+        open_source_model += f"-ntkFix{args.alpha}"
+        replace_llama_with_ntkEmb()
+    elif args.ntk_dyn:
+        open_source_model += f"-ntkDyn"
+        replace_llama_with_ntkEmb()
+
     max_length = k_to_number(args.max_length) - max_new_tokens
 
     if args.flash:
         replace_llama_attn_with_flash_attn()
-        open_source_model = open_source_model + "-flash"
 
     data_save_path = f"Predictions/{args.metric}/{open_source_model}"
-    input(f"Your prediction file will be saved to: {data_save_path} \npress enter to confirm")
+    input(f"Your prediction file will be saved to: {data_save_path}  , press enter to confirm...")
 
     device = torch.device(f'cuda:{args.gpu}' if torch.cuda.is_available() else 'cpu')
 

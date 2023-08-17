@@ -96,7 +96,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--metric', choices=["llm_turbo_eval","llm_gpt4_eval","exam_eval", "ngram_eval", "human_eval"], required=True, help='metric name from ["turbo_eval","gpt4_eval","auto_eval", ...]')
 
-    parser.add_argument('--max_length', type=int, default="16k", help='max length of the input, e.g., 2k, 16k')
+    parser.add_argument('--max_length', default="16k", help='max length of the input, e.g., 2k, 16k')
     # if none, we will load from huggingface
     parser.add_argument('--task_path', type=str, default=None, help= 'set this if you want test a specific task , example: LEval-data/Closed-ended-tasks/coursera.jsonl or LEval-data/Closed-ended-tasks/ ')
     parser.add_argument('--task_name', type=str, default=None,
@@ -108,5 +108,6 @@ if __name__ == "__main__":
     max_length = k_to_number(args.max_length) - max_new_tokens
     openai_model = "turbo-16k-0613-" + args.max_length
     data_save_path = f"Predictions/{args.metric}/{openai_model}"
+    input(f"Your prediction file will be saved to: {data_save_path}  , press enter to confirm...")
     build_key_data_pairs(args, key_data_pairs, data_save_path)
     sys.exit(main())

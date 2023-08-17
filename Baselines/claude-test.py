@@ -83,7 +83,7 @@ if __name__ == "__main__":
     # if none, we will load from huggingface
     parser.add_argument('--task_path', type=str, default=None, help= 'set this if you want test a specific task , example: LEval-data/Closed-ended-tasks/coursera.jsonl or LEval-data/Closed-ended-tasks/ ')
     parser.add_argument('--version', type=str, default="2", choices=["2", "1.3"])
-    parser.add_argument('--mc_tasks', action='store_true', help="test multiple choice tasks")
+    parser.add_argument('--mc_tasks', action='store_true', help='set this if you want to test all multiple choice tasks')
     args = parser.parse_args()
     key_data_pairs = {}
 
@@ -94,5 +94,6 @@ if __name__ == "__main__":
 
     anthropic_model = f"claude-{args.version}"
     data_save_path = f"Predictions/{args.metric}/{anthropic_model}"
+    input(f"Your prediction file will be saved to: {data_save_path}  , press enter to confirm...")
     build_key_data_pairs(args, key_data_pairs, data_save_path)
     sys.exit(main())
