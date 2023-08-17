@@ -95,7 +95,7 @@ Each long document has multiple queries and corresponding responses. The format 
 #### Step 2. Generate your prediction files
 We test all the baselines with a single 80G A800 GPU. If you encounter the OOM problem, please refer to [multiple GPUs inference](#inference). To generate the output files, you need to add a new file to `Baseline` folder and then replace the model name with your own model. An example of testing chatglm on all closed-ended tasks:
 ```
-python Baselines/chatglm2-test.py --task_path LEval-data/Closed-ended-tasks/tpo.jsonl or (--task_name tpo)  --gpu 0 --metric exam_eval (exam_eval, ngram , llm_gpt4_eval, llm_turbo_eval, human_eval)
+python Baselines/chatglm2-test.py --gpu 0 --metric exam_eval (exam_eval, ngram_eval , llm_gpt4_eval, llm_turbo_eval, human_eval)
 ```
 where `--metric` means which metric you want to use (e.g., we use `exam_eval` for closed-ended tasks). Details about metrics in L-Eval can be found in the next section. The script will print out the path to the prediction file and you need to press enter to confirm.
 
