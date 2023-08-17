@@ -196,7 +196,7 @@ We will randomly verify some results with the submitted output files.
 ## Memory-efficient inference and multiple GPUs inference
 #### Using Flash Attention during inference 🚀
 Please first try [Flash Attention](https://github.com/Dao-AILab/flash-attention) if you have a **80G** GPU. Based on our experiments, it works well when the sequence length is less than 16k.  if you still encounter OOM, please refer to the next section.
-If you are using LLaMA, we support FlashAttention in inference which can save your gpu memory, please add the param `--flash`, `--flashv2`.  The code is similar for other models.
+If you are using LLaMA, we support FlashAttention in inference which can save your gpu memory, please add the param `--flash`.  The code is similar for other models.
 Flash attention for Chatglm is implemented with torch2.0. Please ensure that you have successfully installed it.
 
 If you encounter installation issues, it's likely due to the CUDA and Torch versions mismatch. Here is my running env:
