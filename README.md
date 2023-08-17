@@ -194,8 +194,8 @@ We will randomly verify some results with the submitted output files.
 
 <a name="inference"></a>
 ## Memory-efficient inference and multiple GPUs inference
-#### Using Flash Attention during inference 🚀
-Please first try [Flash Attention](https://github.com/Dao-AILab/flash-attention) if you have a **80G** GPU. Based on our experiments, it works well when the sequence length is less than 16k.  if you still encounter OOM, please refer to the next section.
+### Using Flash Attention during inference 🚀
+Please first try [Flash Attention](https://github.com/Dao-AILab/flash-attention) if you have a **80G** GPU. Based on our experiments, it works well when the sequence length is less than 32k (Flash-attn v2).  if you still encounter OOM, please refer to the next section.
 If you are using LLaMA, we support FlashAttention in inference which can save your gpu memory, please add the param `--flash`.  The code is similar for other models.
 Flash attention for Chatglm is implemented with torch2.0. Please ensure that you have successfully installed it.
 
@@ -214,9 +214,14 @@ python setup.py install
 python Baselines/longchat-test.py --task_path LEval-data/Open-ended-tasks/narrative.jsonl --max_length 16k --gpu 0 --metric ngram_eval --flash 
 ```
 
-#### Memory-efficient inference with [LightLLM](https://github.com/ModelTC/lightllm) 🚂
+### Memory-efficient inference with [LightLLM](https://github.com/ModelTC/lightllm) 🚂
 
-Using lightLLM can make the inference procedure on a single 
+Using lightLLM can make the inference procedure on a single or multiple 24G GPUs by optimizing the storage of KV cache but sacrificing inference speed.
+
+#### Installation
+To be done
+#### Examples of running L-Eval with LightLLM
+To be done
 
 
 ## Other Tools
