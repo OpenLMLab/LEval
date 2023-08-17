@@ -27,7 +27,8 @@ We hope L-Eval could help researchers and developers track the progress of long-
 
 
 ## Updates of L-Eval
-- 2023.8.17 We have tested some recently released models based on **Llama2** via NTK (LLama2-chat w/o training) [[code]](https://github.com/OpenLMLab/LEval/blob/main/Baselines/llama2-chat-test.py) and PI (vicuna1.5-16k trained on ShareGPT)[[code]](https://github.com/OpenLMLab/LEval/blob/main/Baselines/vicuna-test.py). Coursera has been updated to improve the difficulty and please download the newest version. We're sorry for the inconvenience. We are also annotating a new code test set and the results for LLama2 model and the new dataset will be released soon.
+- 2023.8.17 We have tested some recently released models based on **Llama2** via NTK w/o training[[code]](https://github.com/OpenLMLab/LEval/blob/main/Baselines/llama2-chat-test.py) and PI (vicuna1.5-16k trained on ShareGPT)[[code]](https://github.com/OpenLMLab/LEval/blob/main/Baselines/vicuna-test.py).  Chatglm2-32k has also been included and the results for these models will be released soon.
+- 2023.8.14 **Coursera** has been updated to improve the difficulty and please download the newest version. We're sorry for the inconvenience. We are also annotating a new **code test set**.
 - 2023.8.4  The [leaderboard](https://l-eval.github.io) is ready now 🎉 
 - 2023.8.1  Predictions of LCLMs tested in this paper are available [here](https://drive.google.com/drive/folders/1pPbIXw0eRD_XZVMixZL4BG_SrMwFH3SH?usp=sharing) and judgements from gpt4 are available [here](https://drive.google.com/drive/folders/1bUGs-2isRLaY5xCz8k3mkKDArX6WxX0u?usp=sharing). 
 We hope these can help researchers analyze different models and metrics. We also add a related work section discussing other long sequences benchmarks.  

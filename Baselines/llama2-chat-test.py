@@ -82,7 +82,7 @@ class NTKRotaryEmbedding(torch.nn.Module):
 
 def replace_llama_with_ntkEmb():
     transformers.models.llama.modeling_llama.LlamaRotaryEmbedding = partial(
-        NTKRotaryEmbedding, max_position=4096, alpha=args.alpha
+        NTKRotaryEmbedding, max_position=4096, alpha=args.ntk_alpha
     )
 
 
@@ -147,6 +147,14 @@ if __name__ == "__main__":
                         help='metric name from choices', required=True)
     parser.add_argument('--max_length', default="4k", help='max length of the input, e.g., 2k, 16k')
     parser.add_argument('--gpu', type=int, default=0)
+
+    # for llama based model
+    parser.add_argument('--scale', default='7b', choices=['7b', '13b'])
+
+    # if you want to use NTK embedding
+    parser.add_argument('--ntk_alpha', type=int, help='using fix ntk to extend ntk_alpha times context length ', default=1)
+    parser.add_argument('--ntk_dyn', action='store_true', help='set this if you want to use dynamic ntk') # ntk_alpha is dynamically determined by the forward x => len(x) / 4k
+
     # set this if you do not want to use data from huggingface
     parser.add_argument('--task_path', type=str, default=None,
                         help='set this if you want test a specific task , example: LEval-data/Closed-ended-tasks/coursera.jsonl or LEval-data/Closed-ended-tasks/ ')
@@ -155,20 +163,13 @@ if __name__ == "__main__":
                         help='set this if you want test a specific task from huggingface, example: coursera')
 
     parser.add_argument('--mc_tasks', action='store_true', help='set this if you want to test all multiple choice tasks')
-
-    # for llama based model
-    parser.add_argument('--scale', default='7b', choices=['7b', '13b'])
     parser.add_argument('--flash', action='store_true', help='set this if you want to use flash attention')
-
-    # if you want to use NTK embedding
-    parser.add_argument('--alpha', type=int, help='using fix ntk to extend alpha times context length ', default=1)
-    parser.add_argument('--ntk_dyn', action='store_true', help='set this if you want to use dynamic ntk') # alpha is dynamically determined by the forward x => len(x) / 4k
     args = parser.parse_args()
 
     model_path = f"meta-llama/Llama-2-{args.scale}-chat-hf"
     open_source_model = f"llama2-{args.scale}-chat-" + args.max_length
-    if args.alpha > 1:
-        open_source_model += f"-ntkFix{args.alpha}"
+    if args.ntk_alpha > 1:
+        open_source_model += f"-ntkFix{args.ntk_alpha}"
         replace_llama_with_ntkEmb()
     elif args.ntk_dyn:
         open_source_model += f"-ntkDyn"

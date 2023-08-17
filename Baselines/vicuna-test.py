@@ -166,6 +166,7 @@ if __name__ == "__main__":
         model_path = f"lmsys/vicuna-{args.scale}-v1.5-16k"
         open_source_model = f"vicuna1.5-{args.scale}-" + args.max_length
         replace_llama_with_condense(4)
+
     else:
         model_path = f"lmsys/vicuna-{args.scale}-v1.3"
         open_source_model = f"vicuna1.3-{args.scale}-" + args.max_length
