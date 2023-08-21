@@ -28,7 +28,7 @@ def main():
             document = d['input']
             cnt = 0
             while num_tokens_from_string(document, "gpt-3.5-turbo") > max_length:
-                document = " ".join(document.split()[:max_length - cnt]) # chunk the input len into 16k tokens
+                document = " ".join(document.split(" ")[:max_length - cnt]) # chunk the input len into 16k tokens
                 cnt += 500
             
             print('document len', num_tokens_from_string(document, "gpt-3.5-turbo"))
@@ -43,7 +43,7 @@ def main():
                 save_d['query'] = inst
                 save_d['gt'] = out
                 if "gsm" in file_name:
-                    messages.append({"role": "user", "content": document + inst})
+                    messages.append({"role": "user", "content": document + "\n\n" + inst})
                     save_d['prompt'] = sys_prompt + inst
 
                 elif args.metric == "exam_eval":
