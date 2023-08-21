@@ -3,6 +3,9 @@
 </div>
 
 ------
+[![evaluation](https://img.shields.io/badge/OpenCompass-Support-royalblue.svg
+)](https://github.com/internLM/OpenCompass/)
+
 ### *L-Eval: Instituting Standardized Evaluation for Long Context Language Models*
 
 L-Eval ([preview on 🤗 HuggingFace Datasets](https://huggingface.co/datasets/L4NLP/LEval) • [check our 📃 paper](https://arxiv.org/abs/2307.11088) ) is a comprehensive long-context language models evaluation suite with 18 long document tasks across multiple domains that require reasoning over long texts, including summarization, question answering, in-context learning with long CoT examples, topic retrieval, and paper writing assistance. L-Eval is a high-quality test set with  411 long documents and  2043 manually labeled query-response pairs.   
@@ -27,6 +30,7 @@ We hope L-Eval could help researchers and developers track the progress of long-
 
 
 ## Updates of L-Eval
+- 2023.8.21 **L-Eval** has been supported by [OpenCompass](https://github.com/internLM/OpenCompass/), which is an universal evaluation platform for foundation models.
 - 2023.8.17 We have tested some recently released models based on **Llama2** via NTK w/o training[[code]](https://github.com/OpenLMLab/LEval/blob/main/Baselines/llama2-chat-test.py) and PI (vicuna1.5-16k trained on ShareGPT)[[code]](https://github.com/OpenLMLab/LEval/blob/main/Baselines/vicuna-test.py).  Chatglm2-32k has also been included and the results for these models will be released soon.
 - 2023.8.14 **Coursera** has been updated to improve the difficulty and please download the newest version. We're sorry for the inconvenience. We are also annotating a new **code test set**.
 - 2023.8.4  The [leaderboard](https://l-eval.github.io) is ready now 🎉 
