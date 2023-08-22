@@ -20,7 +20,7 @@ def main():
             document = d['input']
             cnt = 0
             while num_tokens_from_string(document, tokenizer) > max_length:
-                document = " ".join(document.split()[:max_length - cnt])  # chunk the input len into 16k tokens
+                document = " ".join(document.split(" ")[:max_length - cnt])  # chunk the input len into 16k tokens
                 cnt += 250
 
             instructions = d['instructions']
