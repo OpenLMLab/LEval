@@ -221,9 +221,27 @@ python Baselines/longchat-test.py --task_path LEval-data/Open-ended-tasks/narrat
 Using lightLLM can make the inference procedure on a single or multiple 24G GPUs by optimizing the storage of KV cache but sacrificing inference speed.
 
 #### Installation
-To be done
+1. Download L-Eval and the [data](https://github.com/OpenLMLab/LEval#step-1-download-the-data).
+2. Install LightLLM according to the [official instructions](https://github.com/ModelTC/lightllm#get-started).
+
 #### Examples of running L-Eval with LightLLM
-To be done
+> You must first download the model you would like to evaluate. LightLLM does not support automatic downloads yet.
+
+> Code for running L-Eval with LightLLM is located in the `Baselines-light` directory.
+
+The following command evaluates vicuna-7b-v1.5-16k on 4 RTX 3090 GPUs.
+```bash
+python Baselines-lightllm/vicuna-test.py --metric exam_eval --max_length 16k --model_path /.../.../vicuna-7b-v1.5-16k/ --lightllm_extra_args "--tp 4 --max_total_token_num 130000 --trust_remote_code --max_req_total_len 16384 --max_req_input_len 15900"
+```
+
+> You don't actually need 4 GPUs to run this example. But performance will improve with more GPUs.
+
+`--lightllm_extra_args` are extra arguments passed to LightLLM server. View the [LightLLM documentation](https://github.com/ModelTC/lightllm/blob/main/docs/ApiServerArgs.md) for more information on how to set these arguments. `model_dir` is automatically passed and do not need to be specified again.
+
+The script assumes LightLLM server is listening on port `8000`.
+
+#### Known Issues
+LightLLM server process might not properly terminate after the evaluation script stops. If you don't have other Python processes running, you can run `killall -HUP python` to terminate LightLLM server.
 
 
 ## Other Tools

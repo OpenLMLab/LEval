@@ -1,11 +1,8 @@
-import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM, LlamaForCausalLM
-from functools import partial
-
-import torch
+# Code adapted from https://huggingface.co/kaiokendev/superhot-13b-8k-no-rlhf-test/blob/main/llama_rope_scaled_monkey_patch.py
+from transformers import AutoTokenizer
 import argparse
 from LEval_config import *
-import lightllm_helper
+from lightllm_helper import LightLLMServer, lightllm_infer
 from tqdm import tqdm
 
 
@@ -54,20 +51,19 @@ def main():
                 else:
                     context = "Document is as follows. {} \nInstruction: {} " + f"The suggested output length is around {len(out.split())} words. "
                     message = header + " USER: " + sys_prompt + context
-                    message += " \nASSISTANT: "
+                    message += " \nASSISTANT: My english answer is:"
 
                 save_d['prompt'] = message.replace(document, "<long input>")
-                output = lightllm_helper.lightllm_infer(message.format(document, inst), do_sample=False, max_new_tokens=max_new_tokens)
-                save_d[f'{open_source_model}_pred'] = output
+                output = lightllm_infer(message.format(document, inst), do_sample=False, max_new_tokens=max_new_tokens)
+                save_d[f'{model_name}_pred'] = output
                 save_d['evaluation'] = d['evaluation']
                 if start_idx < 5:
                     print('document len', num_tokens_from_string(document, tokenizer))
                     print("----------------- [output] vs [ground truth] -----------------")
-                    print('[output]:', save_d[f'{open_source_model}_pred'], "\n\n", '[ground truth]:', save_d['gt'])
+                    print('[output]:', save_d[f'{model_name}_pred'], "\n\n", '[ground truth]:', save_d['gt'])
                     start_idx += 1
                 fw.write(json.dumps(save_d) + '\n')
         fw.close()
-        lightllm_helper.stop_lightllm_server(lightllm_proc)
         # break
 
 
@@ -75,8 +71,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--metric', choices=["llm_turbo_eval", "llm_gpt4_eval", "exam_eval", "ngram_eval", "human_eval"],
                         help='metric name from choices', required=True)
-    parser.add_argument('--max_length', default="16k", help='max length of the input, e.g., 2k, 16k')
-    parser.add_argument('--tp', type=int, default=4, help='number of GPUs to use')
+    parser.add_argument('--max_length', default="2k", help='max length of the input, e.g., 2k, 16k')
+    parser.add_argument('--model_path', required=True, help='path to the downloaded model')
+    parser.add_argument('--lightllm_extra_args', help="arguments passed to lightllm server")
     # set this if you do not want to use data from huggingface
     parser.add_argument('--task_path', type=str, default=None,
                         help='set this if you want test a specific task , example: LEval-data/Closed-ended-tasks/coursera.jsonl or LEval-data/Closed-ended-tasks/ ')
@@ -85,22 +82,24 @@ if __name__ == "__main__":
                         help='set this if you want test a specific task from huggingface, example: coursera')
     parser.add_argument('--mc_tasks', action='store_true', help='set this if you want to test all multiple choice tasks')
 
-    # for llama based model
-    parser.add_argument('--scale', default='7b', choices=['7b', '13b'])
-    parser.add_argument('--flash', action='store_true', help='set this if you want to use flash attention')
     args = parser.parse_args()
-    # 7b / 13b
-    model_path = f"lmsys/longchat-{args.scale}-16k"
 
-    open_source_model = f"longchat-{args.scale}-" + args.max_length
-    max_length = k_to_number(args.max_length) - max_new_tokens
+    max_total_len = k_to_number(args.max_length)
+    max_length = max_total_len - max_new_tokens
+    model_path = args.model_path
 
-    data_save_path = f"Predictions/{args.metric}/{open_source_model}"
+    if model_path[-1] == "/":
+        model_name = model_path.split("/")[-2]
+    else:
+        model_name = model_path.split("/")[-1]
+
+    data_save_path = f"Predictions/{args.metric}/{model_name}"
     input(f"Your prediction file will be saved to: {data_save_path}  , press enter to confirm...")
-
-    lightllm_proc = lightllm_helper.start_lightllm_server(model_path, args.tp, max_length, k_to_number(args.max_length))
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
 
     key_data_pairs = {}
     build_key_data_pairs(args, key_data_pairs, data_save_path)
-    sys.exit(main())
+
+    lightllm_args = args.lightllm_extra_args.split() if args.lightllm_extra_args else []
+    tokenizer = AutoTokenizer.from_pretrained(model_path, force_download=True, resume_download=False)
+    with LightLLMServer(model_path, lightllm_args):
+        main()
