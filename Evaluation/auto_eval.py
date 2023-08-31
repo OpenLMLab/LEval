@@ -1,6 +1,7 @@
 """ LEval benchmark metric. """
 import os
 import sys
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Baselines.LEval_config import *
 from collections import defaultdict
@@ -11,7 +12,6 @@ from em import compute_exact_match
 from f1 import compute_f1
 import argparse
 import datasets
-
 
 _DESCRIPTION = """\
 LEval is a suite of 18 datasets across multiple domains that require reasoning over long texts, including summarization, question answering, in-context learning with long CoT examples, topic retrieval, and paper writing assistance.
@@ -30,7 +30,6 @@ Returns: depending on the LEval subset, one or several of:
     "rouge": ROUGE score
 ```
 """
-
 
 DATASET_TO_METRICS = {
     "exam": {
@@ -51,7 +50,6 @@ DATASET_TO_METRICS = {
 }
 
 
-
 class LEvalMetrics(datasets.Metric):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -70,7 +68,7 @@ class LEvalMetrics(datasets.Metric):
                 "transform_aggregated_result_fn": lambda output: output.update(
                     {"geometric_mean": (output["rouge1"] * output["rouge2"] * output["rougeL"]) ** (1.0 / 3.0)}
                 )
-                or output,
+                                                                 or output,
             },
             "exact_match": lambda: {
                 "metric_fn": compute_exact_match,
@@ -100,7 +98,6 @@ class LEvalMetrics(datasets.Metric):
             if self.config_name not in DATASET_TO_METRICS:
                 raise KeyError(f"You should supply a configuration name selected in {list(DATASET_TO_METRICS.keys())}")
             self._metrics_to_compute = DATASET_TO_METRICS[self.config_name]["metrics_to_compute"]
-
 
     def _info(self):
         return datasets.MetricInfo(
@@ -151,15 +148,15 @@ class LEvalMetrics(datasets.Metric):
 
 
 def _compute_helper(
-    predictions,
-    references,
-    metric_fn,
-    agg_fn,
-    metric_fn_kwargs=None,
-    transform_single_input_fn=None,
-    transform_result_fn=None,
-    transform_aggregated_result_fn=None,
-    metric_returns_per_example=False,
+        predictions,
+        references,
+        metric_fn,
+        agg_fn,
+        metric_fn_kwargs=None,
+        transform_single_input_fn=None,
+        transform_result_fn=None,
+        transform_aggregated_result_fn=None,
+        metric_returns_per_example=False,
 ):
     if metric_fn_kwargs is None:
         metric_fn_kwargs = {}
@@ -239,14 +236,12 @@ def _compute_helper(
         )
 
 
-
-
-def postprocess_output(response):
+def process_output_mc(response):
     # Use regular expression to replace anything that is not A, B, C or D with an empty string
     if response in "ABCD":
         return response
     if "coursera" not in args.pred_file:
-        for i,chr in enumerate(response):
+        for i, chr in enumerate(response):
             if chr in "ABCD":
                 return chr
     # retrieve multiple correct answers (for coursera)
@@ -258,7 +253,7 @@ def postprocess_output(response):
         else:
             break
     if len(cleaned_str) > 1:
-        return cleaned_str
+        return ''.join(sorted(set(cleaned_str)))
     # retrieve multiple correct answers (for coursera)
     response = response.split("Question")[0]
     pattern = r"\s*[A-Z](?=[\s.)])"
@@ -267,11 +262,12 @@ def postprocess_output(response):
     cleaned_str = re.sub(r'[^A-D]', '', cleaned_str)
     s_set = set(cleaned_str)
     cleaned_str = "".join(sorted(s_set))
-    if len(cleaned_str) < 1:     # random guess
+    if len(cleaned_str) < 1:  # random guess
         cleaned_str = "A"
     return cleaned_str
 
-def postprocess_gt(response):
+
+def process_gt_mc(response):
     # Use regular expression to replace anything that is not A, B, C or D with an empty string
     input_str = response.split()[0]
     cleaned_str = re.sub(r'[^A-D]', '', input_str)
@@ -279,6 +275,7 @@ def postprocess_gt(response):
     if len(cleaned_str) < 1:
         cleaned_str = "A"
     return cleaned_str
+
 
 def process_math(response):
     match = re.search(r'The answer is (\S+)', response)
@@ -307,13 +304,46 @@ def process_math(response):
     return ret1
 
 
+def process_output_code(response, gt):
+    response = process_gt_code(response)
+
+    if "the final output" in response:
+        response = response.split("the final output")[-1]
+        # get the output from the final output
+        res  = response.split(" ")
+    else:
+        # get the last output
+        res = response.split(" ")[-(len(gt.split())+5):]
+    return " ".join(res)
+
+def process_output_judge(response):
+    response = response.lower()
+    if "true" in response and "false" in response:
+        response = "error"
+    elif "true" in response:
+        response = "True"
+    else:
+        response = "False"
+    return response
+
+def process_gt_code(response):
+    response = re.sub(r'\s+', ' ', response)
+    response = response.replace(",", "")
+    response = response.replace("'", "")
+    response = response.replace("\\", "")
+    response = response.replace(".0", "")
+    response = response.replace("] [", "][")
+    response = response.replace("[ [", "[[")
+    response = response.replace("] ]", "]]")
+    return response
+
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--pred_file", type=str, default="", help="example: turbo-16k-0613-output/output.jsonl")
     args = parser.parse_args()
-    SUPPORT_METRICS  = ["f1", "rouge", "exam"]
+    SUPPORT_METRICS = ["f1", "rouge", "exam"]
 
     # search for the prediction key
     pred_data = read_jsonl(args.pred_file)
@@ -337,14 +367,20 @@ if __name__ == '__main__':
         if instance["evaluation"] not in SUPPORT_METRICS:
             continue
         if with_options:
-            references.append([postprocess_gt(instance["gt"])])
-            predictions.append(postprocess_output(instance[prediction_key]))
+            references.append([process_gt_mc(instance["gt"])])
+            predictions.append(process_output_mc(instance[prediction_key]))
         elif "gsm" in args.pred_file:
             references.append([process_math(instance["gt"])])
             predictions.append(process_math(instance[prediction_key]))
-        else:
+        elif "code" in args.pred_file:
+            references.append([process_gt_code(instance["gt"])])
+            predictions.append(process_output_code(instance[prediction_key], instance["gt"]))
+        elif "sci_fi" in args.pred_file:
             references.append([instance["gt"]])
             predictions.append(instance[prediction_key])
+        else:
+            references.append([instance["gt"]])
+            predictions.append(process_output_judge(instance[prediction_key]))
         config_name = instance["evaluation"]
     assert config_name is not None
 
