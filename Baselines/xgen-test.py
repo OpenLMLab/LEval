@@ -34,7 +34,7 @@ def main():
                 save_d = {}
                 save_d['query'] = inst
                 save_d['gt'] = out
-                if "gsm" in file_name:
+                if "gsm" in file_name or "code" in file_name:
                     context = document + "\n\n" + inst
                     message = sys_prompt + context
                 elif "topic" in file_name:
@@ -42,16 +42,19 @@ def main():
                     message = header + " ### Human: " + sys_prompt + context
                     message += " \n### Assistant:"
                 elif args.metric == "exam_eval":
-                    context = "Document is as follows. {} \nQuestion: {} "
+                    context = "Document is as follows. {document} \nQuestion: {inst} "
                     message = header + " ### Human: " + sys_prompt + context
                     message += "\nAnswer:"
                 else:
-                    context = "Document is as follows. {} Instruction: {} " + f"\nAnswer this question with {len(out.split())} words."
+                    context = "Document is as follows. {document} Instruction: {inst} " + f"\nAnswer this question with {len(out.split())} words."
                     message = header + " ### Human: " + sys_prompt + context
                     message += " \n### Assistant:"
-
+                try:
+                    text_inputs = message.format(document=document, inst=inst)
+                except:
+                    text_inputs = message
                 save_d['prompt'] = message.replace(document, "<long document>")
-                inputs = tokenizer(message.format(document, inst), return_tensors="pt").to(device)
+                inputs = tokenizer(text_inputs, return_tensors="pt").to(device)
                 sample = model.generate(**inputs, do_sample=False, max_new_tokens=max_new_tokens)
                 prompt_length = inputs.input_ids.size()[-1]
                 output = tokenizer.decode(sample[0][prompt_length:])

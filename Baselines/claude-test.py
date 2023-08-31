@@ -29,17 +29,20 @@ def main():
                 save_d = {}
                 save_d['query'] = inst
                 save_d['gt'] = out
-                if "gsm" in file_name or "topic" in file_name:
+                if "gsm" in file_name or "code" in file_name:
                     context = document + "\n\n" + inst
                     message = sys_prompt + context
                 elif args.metric == "exam_eval":
-                    context = "Document is as follows. {} \nQuestion: {}  \nPlease directly give answer without any additonal output or explanation"
+                    context = "Document is as follows. {document} \nQuestion: {inst}  \nPlease directly give answer without any additonal output or explanation"
                     message = sys_prompt + context + " \nAnswer:"
                 else:
-                    context = "Document is as follows. {} Instruction: {} " + f"\nAnswer this question with {len(out.split())} words."
+                    context = "Document is as follows. {document} Instruction: {inst} " + f"\nAnswer this question with {len(out.split())} words."
                     message =  sys_prompt + context
+                try:
+                    text_inputs = message.format(document=document, inst=inst)
+                except:
+                    text_inputs = message
                 save_d['prompt'] = message.replace(document, '<long input>')
-                text_inputs = message.format(document, inst)
                 for _ in range(10):
                     try:
                         if start_idx == 0:

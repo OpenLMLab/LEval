@@ -65,7 +65,7 @@ def main():
             for inst, out in zip(instructions, outputs):
                 if "gsm" in file_name:
                     message = f" Make sure the response is end with The answer is _ ."
-                elif "topic" in file_name:
+                elif "topic" in file_name or "code" in file_name:
                     message = " Please directly give the concise and accurate answer."
                 elif "exam" in args.metric:
                     message = " There could be a sinlge correct option or multiple correct options. Please only provide the letter corresponding to the answer (like A or AB) when answering."
@@ -83,7 +83,6 @@ def main():
 
                 save_d[f'{openai_model}_pred'] = result['result']
                 save_d['source_documents'] = [r.page_content[:100] + '...' for r in result['source_documents']]
-                
                 print("----------------- [output] vs [ground truth] -----------------")
                 print('[output]:', save_d[f'{openai_model}_pred'], "\n\n" , '[ground truth]:', save_d['gt'])
 

@@ -5,7 +5,7 @@
 ------
 ### *L-Eval: Instituting Standardized Evaluation for Long Context Language Models*
 
-L-Eval ([preview on 🤗 HuggingFace Datasets](https://huggingface.co/datasets/L4NLP/LEval) • [check our 📃 paper](https://arxiv.org/abs/2307.11088) ) is a comprehensive long-context language models evaluation suite with 18 long document tasks across multiple domains that require reasoning over long texts, including summarization, question answering, in-context learning with long CoT examples, topic retrieval, and paper writing assistance. L-Eval is a high-quality test set with  411 long documents and  2043 manually labeled query-response pairs.   
+L-Eval ([preview on 🤗 HuggingFace Datasets](https://huggingface.co/datasets/L4NLP/LEval) • [check our 📃 paper](https://arxiv.org/abs/2307.11088) ) is a comprehensive long-context language models evaluation suite with 18 long document tasks across multiple domains that require reasoning over long texts, including summarization, question answering, in-context learning with long CoT examples, topic retrieval, and paper writing assistance. L-Eval is a high-quality test set with 508 long documents and  2197 manually labeled query-response pairs.   
 Currently, there have been great efforts invested in the expansion of context length for large language models. 
 But it remains unclear whether extending the context can offer substantial gains over traditional methods such as retrieval, and to what extent it improves upon their regular (short context) counterparts  in practical downstream tasks. 
 
@@ -26,20 +26,21 @@ We hope L-Eval could help researchers and developers track the progress of long-
 </div>
 
 
-## Updates of L-Eval
-- 2023.8.17 We have tested some recently released models based on **Llama2** via NTK w/o training[[code]](https://github.com/OpenLMLab/LEval/blob/main/Baselines/llama2-chat-test.py) and PI (vicuna1.5-16k trained on ShareGPT)[[code]](https://github.com/OpenLMLab/LEval/blob/main/Baselines/vicuna-test.py).  Chatglm2-32k has also been included and the results for these models will be released soon.
-- 2023.8.14 **Coursera** has been updated to improve the difficulty and please download the newest version. We're sorry for the inconvenience. We are also annotating a new **code test set**.
-- 2023.8.4  The [leaderboard](https://l-eval.github.io) is ready now 🎉 
-- 2023.8.1  Predictions of LCLMs tested in this paper are available [here](https://drive.google.com/drive/folders/1pPbIXw0eRD_XZVMixZL4BG_SrMwFH3SH?usp=sharing) and judgements from gpt4 are available [here](https://drive.google.com/drive/folders/1bUGs-2isRLaY5xCz8k3mkKDArX6WxX0u?usp=sharing). 
+## 🔥 Updates of L-Eval 
+- **[2023.8.30]** We have annotated two new closed ended tasks:  (i) A [scientific fiction](https://github.com/OpenLMLab/LEval/blob/main/LEval-data/Closed-ended-tasks/sci_fi.jsonl) dataset to test the loyalty to input and (ii) a [code understanding](https://github.com/OpenLMLab/LEval/blob/main/LEval-data/Closed-ended-tasks/codeU.jsonl) dataset. Details can be found in our paper [v3](). 📢 **L-Eval** has been supported by [OpenCompass](https://github.com/internLM/OpenCompass/). You can  test L-Eval together with other benchmarks for foundation models here.
+- [2023.8.17] We have tested some recently released models based on **Llama2** via NTK w/o training[[code]](https://github.com/OpenLMLab/LEval/blob/main/Baselines/llama2-chat-test.py) and PI (vicuna1.5-16k trained on ShareGPT)[[code]](https://github.com/OpenLMLab/LEval/blob/main/Baselines/vicuna-test.py).  Chatglm2-32k has also been included and the results for these models will be released soon.
+- [2023.8.14] **Coursera** has been updated to improve the difficulty and please download the newest version. We're sorry for the inconvenience. We are also annotating a new **code test set**.
+- [2023.8.01]  Predictions of LCLMs tested in this paper are available [here](https://drive.google.com/drive/folders/1pPbIXw0eRD_XZVMixZL4BG_SrMwFH3SH?usp=sharing) and judgements from gpt4 are available [here](https://drive.google.com/drive/folders/1bUGs-2isRLaY5xCz8k3mkKDArX6WxX0u?usp=sharing). 
 We hope these can help researchers analyze different models and metrics. We also add a related work section discussing other long sequences benchmarks.  
 
-Please check our paper [v2](https://arxiv.org/abs/2307.11088) for more details.
+Please check our paper [v3](https://arxiv.org/abs/2307.11088) for more details.
 
 ## Folders
 The repository is structured as follows:
 
 ```bash
 ├── Baselines/ # scripts to generate the prediction files with baseline models
+├── Baselines-light/ # scripts to generate the prediction files with 24G gpus
 ├── Evaluation/ # evaluation scripts
 ├── LEval-data/ # test samples
 │   ├── Exam/ # exact match tasks (like multiple-choice)
@@ -64,11 +65,11 @@ The repository is structured as follows:
 <a name="use"></a>
 ## Quick use
 #### Step 1. Download the data 
-It is easy to load the test data in one line with huggingface datasets, and we give the example scripts:
+It is easy to load the 20 test data in one line with huggingface datasets, and we give the example scripts:
 ```python
 from datasets import load_dataset
 
-datasets = ["coursera", "gsm100", "quality", "topic_retrieval_longchat", "tpo", "financial_qa", "gov_report_summ", "legal_contract_qa", "meeting_summ", "multidoc_qa", "narrative_qa", "natural_question", "news_summ", "paper_assistant", "patent_summ", "review_summ", "scientific_qa", "tv_show_summ"]
+datasets = ["coursera", "gsm100", "quality", "topic_retrieval_longchat", "tpo", "codeU", "sci_fi" ,"financial_qa", "gov_report_summ", "legal_contract_qa", "meeting_summ", "multidoc_qa", "narrative_qa", "natural_question", "news_summ", "paper_assistant", "patent_summ", "review_summ", "scientific_qa", "tv_show_summ"]
 
 for testset in datasets:
     data = load_dataset('L4NLP/LEval', testset, split='test')

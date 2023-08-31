@@ -102,7 +102,7 @@ def main():
                 save_d = {}
                 save_d['query'] = inst
                 save_d['gt'] = out
-                if "gsm" in file_name:
+                if "gsm" in file_name or "code" in file_name:
                     context = document + "\n\n" + inst
                     message = sys_prompt + context
                 elif "topic" in file_name:
@@ -121,9 +121,12 @@ def main():
                     context = "Document is as follows. {} \nInstruction: {} " + f"The suggested output length is around {len(out.split())} words. "
                     message = header + " USER: " + sys_prompt + context
                     message += " \nASSISTANT: My english answer is:"
-
+                try:
+                    text_inputs = message.format(document=document, inst=inst)
+                except:
+                    text_inputs = message
                 save_d['prompt'] = message.replace(document, "<long input>")
-                inputs = tokenizer(message.format(document, inst), return_tensors="pt").to(device)
+                inputs = tokenizer(text_inputs, return_tensors="pt").to(device)
                 prompt_length = inputs.input_ids.size()[-1]
                 sample = model.generate(inputs.input_ids.to(model.device), do_sample=False, max_new_tokens=max_new_tokens, use_cache=True)[0]
                 output = tokenizer.decode(sample[prompt_length:], skip_special_tokens=True)

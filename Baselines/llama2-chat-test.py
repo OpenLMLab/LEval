@@ -51,8 +51,6 @@ class NTKRotaryEmbedding(torch.nn.Module):
             if self.alpha == 1:
                 if x.shape[2] > self.max_seq_len_cached:
                     scale_up = math.ceil((seq_len + max_new_tokens) / self.max_seq_len_cached) # prompt + max_len
-                    # if  scale_up != 2:
-                    #     input(f"{scale_up} {seq_len + 512}, {self.max_seq_len_cached}")
                     self.update_base = self.base * (scale_up ** (self.dim / (self.dim-2)))
             else:
                 self.update_base = self.base * (self.alpha ** (self.dim / (self.dim - 2)))
@@ -110,21 +108,25 @@ def main():
                 save_d = {}
                 save_d['query'] = inst
                 save_d['gt'] = out
-                if "gsm" in file_name:
+                if "gsm" in file_name or "code" in file_name:
                     context = document + "\n\n" + inst
                     message = B_INST + B_SYS + sys_prompt + E_SYS + context
                 elif "topic" in file_name:
                     context = document + "\n\n" + inst
                     message = B_INST + B_SYS + sys_prompt + E_SYS + context + E_INST
                 elif args.metric == "exam_eval":
-                    context = "Document is as follows. {} \nQuestion: {}.  Please directly give answer without any additonal output or explanation "
+                    context = "Document is as follows. {document} \nQuestion: {inst}.  Please directly give answer without any additonal output or explanation "
                     message = B_INST + B_SYS + sys_prompt + E_SYS + context + E_INST
                     message += "\nAnswer:"
                 else:
-                    context = "Document is as follows. {} Instruction: {} " + f"\nAnswer this question with {len(out.split())} words."
+                    context = "Document is as follows. {document} Instruction: {inst} " + f"\nAnswer this question with {len(out.split())} words."
                     message = B_INST + B_SYS + sys_prompt + E_SYS + context + E_INST
+                try:
+                    text_inputs = message.format(document=document, inst=inst)
+                except:
+                    text_inputs = message
                 save_d['prompt'] = message.replace(document, "<long document>")
-                inputs = tokenizer(message.format(document, inst), return_tensors="pt").to(device)
+                inputs = tokenizer(text_inputs, return_tensors="pt").to(device)
 
                 sample = model.generate(**inputs, do_sample=False, max_new_tokens=max_new_tokens)
                 prompt_length = inputs.input_ids.size()[-1]
@@ -133,6 +135,7 @@ def main():
                 save_d['evaluation'] = d['evaluation']
                 if start_idx < 5:
                     print('document len', num_tokens_from_string(document, tokenizer))
+                    print("[document]:",text_inputs[:100] + "...")
                     print("----------------- [output] vs [ground truth] -----------------")
                     print('[output]:', save_d[f'{open_source_model}_pred'], "\n\n", '[ground truth]:', save_d['gt'])
                     start_idx += 1

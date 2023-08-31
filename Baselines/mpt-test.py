@@ -29,25 +29,31 @@ def main():
                 save_d = {}
                 save_d['query'] = inst
                 save_d['gt'] = out
-                if "gsm" in file_name or "topic" in file_name:
+                if "gsm" in file_name or "topic" in file_name or "code" in file_name:
                     context = document + "\n\n" + inst
                     message =  sys_prompt + context
                 elif args.metric == "ngram_eval":
-                    context = "Document is as follows. {} \nQuestion: {} " + f"The suggested output length is around {len(out.split())} words. "
+                    context = "Document is as follows. {document} \nQuestion: {inst} " + f"The suggested output length is around {len(out.split())} words. "
                     message =  sys_prompt + context
                 else:
-                    context = "Document is as follows. {} \nQuestion: {} "
+                    context = "Document is as follows. {document} \nQuestion: {inst} "
                     message = sys_prompt + context
-                message += "\nThe answer is: "
+
+                try:
+                    text_inputs = message.format(document=document, inst=inst)
+                except:
+                    text_inputs = message
+
+                text_inputs += "\nThe answer is: "
                 save_d['prompt'] = message.replace(document, '<long input>')
-                message = message.format(document, inst)
                 pipe = pipeline('text-generation', model=model, tokenizer=tokenizer, device=device)
                 with torch.autocast('cuda', dtype=torch.bfloat16):
-                    output = pipe(message, max_new_tokens=512, do_sample=False, use_cache=True)[0]['generated_text'][len(message):]
+                    output = pipe(text_inputs, max_new_tokens=512, do_sample=False, use_cache=True)[0]['generated_text'][len(message):]
                 save_d[f'{open_source_model}_pred'] = output
                 save_d['evaluation'] = d['evaluation']
                 if start_idx < 5:
                     print('document len', num_tokens_from_string(document, tokenizer))
+                    print("[document]:",text_inputs[:100] + "...")
                     print("----------------- [output] vs [ground truth] -----------------")
                     print('[output]:', save_d[f'{open_source_model}_pred'], "\n\n", '[ground truth]:', save_d['gt'])
                     start_idx += 1

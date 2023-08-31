@@ -101,7 +101,7 @@ def main():
                 save_d = {}
                 save_d['query'] = inst
                 save_d['gt'] = out
-                if "gsm" in file_name:
+                if "gsm" in file_name or "code" in file_name:
                     context = document + "\n\n" + inst
                     message = sys_prompt + context
                 elif "topic" in file_name:
@@ -109,20 +109,24 @@ def main():
                     message = header + " USER: " + sys_prompt + context
                     message += " \nASSISTANT: "
                 elif args.metric == "exam_eval":
-                    context = "Document is as follows. {} \nQuestion: {} "
+                    context = "Document is as follows. {document} \nQuestion: {inst} "
                     message = header + " USER: " + sys_prompt + context
                     message += " \nAnswer:"
                 elif "coursera" in file_name:
-                    context = "Document is as follows. {} Question: {} "
+                    context = "Document is as follows. {document} Question: {inst} "
                     message = header + " USER: " + sys_prompt + context + "\n Please only give the correct options (e.g., A)."
                     message += " \nASSISTANT: "
                 else:
-                    context = "Document is as follows. {} \nInstruction: {} " + f"The suggested output length is around {len(out.split())} words. "
+                    context = "Document is as follows. {document} \nInstruction: {inst} " + f"The suggested output length is around {len(out.split())} words. "
                     message = header + " USER: " + sys_prompt + context
                     message += " \nASSISTANT: "
 
+                try:
+                    text_inputs = message.format(document=document, inst=inst)
+                except:
+                    text_inputs = message
                 save_d['prompt'] = message.replace(document, "<long input>")
-                inputs = tokenizer(message.format(document, inst), return_tensors="pt").to(device)
+                inputs = tokenizer(text_inputs, return_tensors="pt").to(device)
                 prompt_length = inputs.input_ids.size()[-1]
                 sample = model.generate(inputs.input_ids.to(model.device), do_sample=False, max_new_tokens=max_new_tokens, use_cache=True)[0]
                 output = tokenizer.decode(sample[prompt_length:], skip_special_tokens=True)
@@ -130,6 +134,7 @@ def main():
                 save_d['evaluation'] = d['evaluation']
                 if start_idx < 5:
                     print('document len', num_tokens_from_string(document, tokenizer))
+                    print("[document]:",text_inputs[:100] + "...")
                     print("----------------- [output] vs [ground truth] -----------------")
                     print('[output]:', save_d[f'{open_source_model}_pred'], "\n\n", '[ground truth]:', save_d['gt'])
                     start_idx += 1

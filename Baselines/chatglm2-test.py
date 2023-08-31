@@ -35,25 +35,27 @@ def main():
                 save_d = {}
                 save_d['query'] = inst
                 save_d['gt'] = out
-                if "gsm" in file_name or "topic" in file_name:
+                if "gsm" in file_name or "code" in file_name:
                     context = document + "\n\n" + inst
-                    message = header + sys_prompt + context
+                    message = header + sys_prompt + context # step by step reasoning
                 elif args.metric == "exam_eval":
-                    context = "Document is as follows. {} \nQuestion: {} "
+                    context = "Document is as follows. {document} \nQuestion: {inst} "
                     message = header + sys_prompt + context + " \nAnswer:"
                 else:
                     # adding the length instruction
-                    context = "Document is as follows. {} Instruction: {} " + f"\nAnswer this question with {len(out.split())} words."
+                    context = "Document is as follows. {document} Instruction: {inst} " + f"\nAnswer this question with {len(out.split())} words."
                     message = header + sys_prompt + context
-
+                try:
+                    text_inputs = message.format(document=document, inst=inst)
+                except:
+                    text_inputs = message
                 save_d['prompt'] = message.replace(document, '<long input>')
-                text_inputs = message.format(document, inst)
                 response, history = model.chat(tokenizer, text_inputs, history=[], do_sample=False)
                 save_d[f'{open_source_model}_pred'] = response
                 save_d['evaluation'] = d['evaluation']
                 if start_idx <5:
                     print('document len', num_tokens_from_string(document, tokenizer))
-                    print(text_inputs)
+                    print("[document]:",text_inputs[:100] + "...")
                     print("----------------- [output] vs [ground truth] -----------------")
                     print('[output]:', save_d[f'{open_source_model}_pred'], "\n\n", '[ground truth]:', save_d['gt'])
                     start_idx += 1
