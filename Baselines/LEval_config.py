@@ -39,7 +39,7 @@ def build_key_data_pairs(args, key_data_pairs, data_save_path):
         if args.task_name:
             data = load_dataset('L4NLP/LEval', args.task_name, split='test')
             key_data_pairs[to_filename(data_save_path, args.task_name)] = data
-        if args.mc_tasks:
+        elif args.mc_tasks:
             files = [os.path.join("LEval-data/Closed-ended-tasks", f"{task_name}.jsonl") for task_name in with_option_tasks]
             for file_path in files:
                 data = read_jsonl(file_path)

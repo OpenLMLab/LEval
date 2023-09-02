@@ -89,6 +89,9 @@ def main():
                 fw.write(json.dumps(save_d) + '\n')
                         
                 time.sleep(1.0)
+                
+            if args.retriever != 'BM25':
+                docsearch.delete_collection() # clear the collection
             i += 1
         fw.close()
         # break
