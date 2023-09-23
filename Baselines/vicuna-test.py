@@ -110,15 +110,15 @@ def main():
                     message = header + " USER: " + sys_prompt + context
                     message += " \nASSISTANT: "
                 elif args.metric == "exam_eval":
-                    context = "Document is as follows. {} \nQuestion: {} "
+                    context = "Document is as follows. {document} \nQuestion: {inst} "
                     message = header + " USER: " + sys_prompt + context
                     message += " \nAnswer:"
                 elif "coursera" in file_name:
-                    context = "Document is as follows. {} Question: {} "
+                    context = "Document is as follows. {document} Question: {inst} "
                     message = header + " USER: " + sys_prompt + context + "\n Please only give the correct options (e.g., A)."
                     message += " \nASSISTANT: "
                 else:
-                    context = "Document is as follows. {} \nInstruction: {} " + f"The suggested output length is around {len(out.split())} words. "
+                    context = "Document is as follows. {document} \nInstruction: {inst} " + f"The suggested output length is around {len(out.split())} words. "
                     message = header + " USER: " + sys_prompt + context
                     message += " \nASSISTANT: My english answer is:"
                 try:
