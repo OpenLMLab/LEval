@@ -377,10 +377,10 @@ if __name__ == '__main__':
             predictions.append(process_output_code(instance[prediction_key], instance["gt"]))
         elif "sci_fi" in args.pred_file:
             references.append([instance["gt"]])
-            predictions.append(instance[prediction_key])
+            predictions.append(process_output_judge(instance[prediction_key]))
         else:
             references.append([instance["gt"]])
-            predictions.append(process_output_judge(instance[prediction_key]))
+            predictions.append(instance[prediction_key])
         config_name = instance["evaluation"]
     assert config_name is not None
 
