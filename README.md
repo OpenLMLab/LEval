@@ -11,7 +11,6 @@ L-Eval has 2 group: *closed-ended* tasks and *open-ended* tasks. The closed-ende
 The closed-ended group does not have issues with evaluation fairness. However, we have found that n-gram metrics such as ROUGE and F1 cannot accurately reflect the abilities of LCLMs. As such, L-Eval does not solely rely on metrics used in previous text generation benchmarks. Instead, L-Eval primarily utilizes Length-Instruction-Enhanced (LIE) evaluation, and win-rate% against Turbo-16k or Llama2 ([open-ended tasks evaluation](#eval)).
 
 We hope L-Eval could help researchers and developers track the progress of long-context language models (LCLMs) and understand the strengths/shortcomings of different methods. We will also keep up with the **latest releases** of instruction-following LCLMs.
-We are very pleased to answer any questions about L-Eval: `cxan20@fudan.edu.cn`
 
 #### Other features of this repo:
 - 🧭️ [Handle CUDA OOM with memory-efficient inference](#inference)
@@ -301,6 +300,8 @@ Other open-sourced datasets are collected from: [gov_report](https://gov-report-
 
 Please kindly cite the [original papers](https://github.com/OpenLMLab/LEval/blob/main/citation.bib) when using L-Eval.
 Thanks again for their effort!!  
+
+We are very pleased to answer any questions about L-Eval: `cxan20@fudan.edu.cn`
 
 ## Citation
 ```
