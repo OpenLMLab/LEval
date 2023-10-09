@@ -92,14 +92,15 @@ Each long document has multiple queries and corresponding responses. The format 
 **Examples of closed-ended tasks**
   - Multiple Choice Question (single correct option). Example predicted answer: `A, BCD`
   - Math Word Problems. Example predicted answer: `3`
+
 We test all the baselines with a single 80G A800 GPU. If you encounter the OOM problem, please refer to [multiple GPUs inference](#inference). To generate the output files, you need to add a new file to `Baseline` folder and then replace the model name with your own model. An example of testing `gpt3.5-turbo-16k` on closed-ended tasks:
 ```
 python Baselines/turbo16k-test.py  --metric exam_eval (for closed-ended group)  --task_name quality [Optional, if you only want to test one task]
 ```
-where `--metric` means which metric you want to use (e.g., we use `exam_eval` for closed-ended tasks). Details about metrics in L-Eval can be found in the [next section](#eval). The script will print out the path to the prediction file. You need to press enter to confirm.
+The script will save the prediction results to a local file. You need to press enter to confirm the path. Details about open-ended tasks can be found in the [next section](#eval).
 
 #### Step 3. Evaluate the prediction file
-Step 2 will generate a prediction file. Please run the following command to calculate metric:
+Given the prediction file generated in Step 2, please run the following command to calculate metric:
 ```
 python Evaluation/auto_eval.py --pred_file Predictions/exam_eval/turbo-16k-0613/quality.pred.jsonl 
 ```
