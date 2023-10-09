@@ -73,9 +73,24 @@ def main():
 
                         save_d[f'{openai_model}_pred'] = ret
                         save_d['evaluation'] = d['evaluation']
+
+                        # test the factuality in scientific fiction
+                        if "sci_fi" in file_name:
+                            text_inputs = inst.replace("based on the world described in the document.",
+                                                       "based on the real-world knowledge and facts up until your last training") + "\nAnswer:"
+                            messages.append({"role": "user", "content": text_inputs})
+                            response = openai.ChatCompletion.create(
+                                model="gpt-3.5-turbo-16k-0613",
+                                messages=messages,
+                                max_tokens=max_new_tokens,
+                                temperature=0.0001,
+                            )  # get response
+                            ret = response['choices'][0]['message']['content']
+                            ret = ret.strip()  # get the paraphrased answer
+                            save_d[f'{openai_model}_pred'] += f" [fact: {ret}]"
+
                         print("----------------- [output] vs [ground truth] -----------------")
                         print('[output]:', save_d[f'{openai_model}_pred'], "\n\n" , '[ground truth]:', save_d['gt'])
-
                         fw.write(json.dumps(save_d) + '\n')
                         break
 
@@ -92,7 +107,8 @@ def main():
         # break
 
 if __name__ == "__main__":
-    openai.api_key = ""
+    openai.api_key = "" # please fulfill your api key here
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--metric', choices=["llm_turbo_eval","llm_gpt4_eval","exam_eval", "ngram_eval", "human_eval"], required=True, help='metric name from ["turbo_eval","gpt4_eval","auto_eval", ...]')
 

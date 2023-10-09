@@ -51,6 +51,15 @@ def main():
                     output = pipe(text_inputs, max_new_tokens=512, do_sample=False, use_cache=True)[0]['generated_text'][len(message):]
                 save_d[f'{open_source_model}_pred'] = output
                 save_d['evaluation'] = d['evaluation']
+
+                if "sci_fi" in file_name:
+                    text_inputs = inst.replace("based on the world described in the document.", "based on the real-world knowledge and facts up until your last training") + "\nAnswer:"
+                    pipe = pipeline('text-generation', model=model, tokenizer=tokenizer, device=device)
+                    with torch.autocast('cuda', dtype=torch.bfloat16):
+                        output = pipe(text_inputs, max_new_tokens=512, do_sample=False, use_cache=True)[0][
+                                     'generated_text'][len(message):]
+                    save_d[f'{open_source_model}_pred'] += f" [fact: {output}]"
+
                 if start_idx < 5:
                     print('document len', num_tokens_from_string(document, tokenizer))
                     print("[document]:",text_inputs[:100] + "...")

@@ -59,6 +59,19 @@ def main():
 
                         save_d[f'{anthropic_model}_pred'] = ret
                         save_d['evaluation'] = d['evaluation']
+
+                        # test the factuality in scientific fiction
+                        if "sci_fi" in file_name:
+                            text_inputs = inst.replace("based on the world described in the document.",
+                                                       "based on the real-world knowledge and facts up until your last training") + "\nAnswer:"
+                            completion = anthropic.completions.create(
+                                model=anthropic_model,
+                                max_tokens_to_sample=max_new_tokens,
+                                prompt=f"{HUMAN_PROMPT} {text_inputs} {AI_PROMPT}",
+                            )
+                            ret = completion.completion.strip()  # get the paraphrased answer
+                            save_d[f'{anthropic_model}_pred'] += f" [fact: {ret}]"
+
                         print("----------------- [output] vs [ground truth] -----------------")
                         print('[output]:', save_d[f'{anthropic_model}_pred'], "\n\n" , '[ground truth]:', save_d['gt'])
 

@@ -37,12 +37,6 @@ def exact_match_score(prediction, ground_truth):
             gt = float(ground_truth)
             res = int(pre == gt)
         except ValueError:
-            if len(prediction.split("\n")) > 0:
-                preds = prediction.split("\n")
-                for pred in preds:
-                    if len(pred) > 1:
-                        prediction = pred
-                        break
             if ground_truth.lower().replace(" ", "") in prediction.lower().replace(" ", ""):
                 res = 1
 

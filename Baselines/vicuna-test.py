@@ -132,6 +132,15 @@ def main():
                 output = tokenizer.decode(sample[prompt_length:], skip_special_tokens=True)
                 save_d[f'{open_source_model}_pred'] = output
                 save_d['evaluation'] = d['evaluation']
+
+                if "sci_fi" in file_name:
+                    text_inputs = inst.replace("based on the world described in the document.", "based on the real-world knowledge and facts up until your last training") + "\nAnswer:"
+                    inputs = tokenizer(text_inputs, return_tensors="pt").to(device)
+                    sample = model.generate(**inputs, do_sample=False, max_new_tokens=max_new_tokens)
+                    prompt_length = inputs.input_ids.size()[-1]
+                    output = tokenizer.decode(sample[0][prompt_length:])
+                    save_d[f'{open_source_model}_pred'] += f" [fact: {output}]"
+
                 if start_idx < 5:
                     print('document len', num_tokens_from_string(document, tokenizer))
                     print("----------------- [output] vs [ground truth] -----------------")
@@ -177,7 +186,6 @@ if __name__ == "__main__":
 
     if args.flash:
         replace_llama_attn_with_flash_attn()
-        open_source_model = open_source_model
 
     data_save_path = f"Predictions/{args.metric}/{open_source_model}"
     input(f"Your prediction file will be saved to: {data_save_path}  , press enter to confirm...")

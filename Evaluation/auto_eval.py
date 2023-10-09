@@ -245,6 +245,7 @@ def process_output_mc(response):
             if chr in "ABCD":
                 return chr
     # retrieve multiple correct answers (for coursera)
+
     cleaned_str = ""
     for chr in response:
         if chr in "ABCD":
@@ -252,6 +253,7 @@ def process_output_mc(response):
             response = response[1:]
         else:
             break
+
     if len(cleaned_str) > 1:
         return ''.join(sorted(set(cleaned_str)))
     # retrieve multiple correct answers (for coursera)
@@ -305,26 +307,57 @@ def process_math(response):
 
 
 def process_output_code(response, gt):
+    gt_len = len(gt.split())
     response = process_gt_code(response)
-
+    response = response.replace("will be", "")
+    response = response.replace("of the code", "")
+    response = response.replace("is", "")
+    response = response.replace("would be", "")
+    response = response.replace("the value of", "")
+    response = response.replace("the result of", "")
+    response = response.replace("printed", "")
     if "the final output" in response:
         response = response.split("the final output")[-1]
         # get the output from the final output
-        res  = response.split(" ")
+        res  =  re.split(r'\s+', response)[:(gt_len+3)]
     else:
         # get the last output
-        res = response.split(" ")[-(len(gt.split())+5):]
+        res =  re.split(r'\s+', response)[-(gt_len+3):]
     return " ".join(res)
 
-def process_output_judge(response):
+
+def process_gt_judge(response):
     response = response.lower()
-    if "true" in response and "false" in response:
-        response = "error"
-    elif "true" in response:
-        response = "True"
-    else:
-        response = "False"
-    return response
+    resp_list = response.split("[fact:")
+    loyalty = resp_list[0]
+    match = re.search(r'\[fact: (.*?)\]', response)
+    fact = match.group(1)
+    return [loyalty, fact]  # 输出: False
+
+
+def process_output_judge(response):
+    loyalty, fact = process_gt_judge(response)
+    output_list = []
+    for word in loyalty.split():
+        if "true" in word:
+            output_list.append("true")
+            break
+        elif "false" in word:
+            output_list.append("false")
+            break
+    if len(output_list) == 0:
+        output_list.append("<error>")
+    for word in loyalty.split():
+        if "true" in word:
+            output_list.append("true")
+            break
+        elif "false" in word:
+            output_list.append("false")
+            break
+    if output_list == 1:
+        output_list.append("<error>")
+    return output_list # disable random guess for the dataset for high variance
+
 
 def process_gt_code(response):
     response = re.sub(r'\s+', ' ', response)
@@ -343,6 +376,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--pred_file", type=str, default="", help="example: turbo-16k-0613-output/output.jsonl")
     args = parser.parse_args()
+    # This script can calulate these metrics
     SUPPORT_METRICS = ["f1", "rouge", "exam"]
 
     # search for the prediction key
@@ -376,8 +410,9 @@ if __name__ == '__main__':
             references.append([process_gt_code(instance["gt"])])
             predictions.append(process_output_code(instance[prediction_key], instance["gt"]))
         elif "sci_fi" in args.pred_file:
-            references.append([instance["gt"]])
-            predictions.append(process_output_judge(instance[prediction_key]))
+            loyalty, fact = process_gt_judge(instance["gt"])
+            references += [[loyalty], [fact]]
+            predictions +=  process_output_judge(instance[prediction_key])
         else:
             references.append([instance["gt"]])
             predictions.append(instance[prediction_key])

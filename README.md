@@ -5,35 +5,31 @@
 ------
 ### *L-Eval: Instituting Standardized Evaluation for Long Context Language Models*
 
-L-Eval ([preview on 🤗 HuggingFace Datasets](https://huggingface.co/datasets/L4NLP/LEval) • [check our 📃 paper](https://arxiv.org/abs/2307.11088) ) is a comprehensive long-context language models evaluation suite with 18 long document tasks across multiple domains that require reasoning over long texts, including summarization, question answering, in-context learning with long CoT examples, topic retrieval, and paper writing assistance. L-Eval is a high-quality test set with 508 long documents and  2197 manually labeled query-response pairs.   
-Currently, there have been great efforts invested in the expansion of context length for large language models. 
-But it remains unclear whether extending the context can offer substantial gains over traditional methods such as retrieval, and to what extent it improves upon their regular (short context) counterparts  in practical downstream tasks. 
+L-Eval ([preview on 🤗 HuggingFace Datasets](https://huggingface.co/datasets/L4NLP/LEval) • [check our 📃 paper](https://arxiv.org/abs/2307.11088) ) is a comprehensive Long Context Language Models (LCLMs) evaluation suite with 20 sub-tasks, 508 long documents, and over 2,000 human-labeled query-response pairs encompassing diverse question styles, domains, and input length (3k～200k tokens).
+L-Eval has 2 group: *closed-ended* tasks and *open-ended* tasks. The closed-ended group primarily tests the reasoning and understanding ability regarding a longer context, and the open-ended group consists of more summarization tasks that require aggregation of long document information ([download the data](#use)).
+
+The closed-ended group does not have evaluation fairness issues. While we find that n-gram metrics like rouge, F1 cannot accurately reflect the ability of LCLMs. So, L-Eval does not merely follow metrics used in previous text generation benchmarks . L-Eval mainly uses Length-Instruction-Enhanced (LIE) evaluation and win-rate% vs (Turbo-16k or Llama2) as the main metrics ([Long context models evaluation](#eval)).
+
 
 We hope L-Eval could help researchers and developers track the progress of long-context language models (LCLMs) and understand the strengths/shortcomings of different methods. We will also keep up with the **latest releases** of instruction-following LCLMs.
+We are very pleased to answer any questions about L-Eval: `cxan20@fudan.edu.cn`
 
-#### Features of this repo:
-- 🧐 [How to get the data](#use)  
-- 📏 [How to evaluate your models](#eval)  
-- 📨 [How to submit your results](#submit)  
-- 🔖 [View the Leaderboard](https://l-eval.github.io) 
+#### Other features of this repo:
 - 🧭️ [Handle CUDA OOM with memory-efficient inference](#inference)
 - 🖇️ [Build a retrieval-based baseline with Langchain](#tool)  
-- ✏️ [Annotate & filter QA pairs from local jsonl files with web](#tool)
+- ✏️ [Flask web client for editing local jsonl files](#tool)
+- 🔖 [View the Leaderboard](https://l-eval.github.io) 
+- 📨 [How to submit your results](#submit)  
+- [Previous long sequence datasets used in L-Eval](#ack)  
 
-#### Overview:
+#### Long context abilities of LLMs on closed/open-ended tasks:
 <div align="center">
-<img src="figs/lclms_bar.png" border="0" width=850px/>
+<img src="figs/overall.png" border="0" width=850px/>
 </div>
 
-
 ## 🔥 Updates of L-Eval 
-- **[2023.8.30]** We have annotated two new closed ended tasks:  (i) A [scientific fiction](https://github.com/OpenLMLab/LEval/blob/main/LEval-data/Closed-ended-tasks/sci_fi.jsonl) dataset to test the loyalty to input and (ii) a [code understanding](https://github.com/OpenLMLab/LEval/blob/main/LEval-data/Closed-ended-tasks/codeU.jsonl) dataset. Details can be found in our paper [v3](). 📢 **L-Eval** has been supported by [OpenCompass](https://github.com/internLM/OpenCompass/). You can  test L-Eval together with other benchmarks for foundation models here.
-- [2023.8.17] We have tested some recently released models based on **Llama2** via NTK w/o training[[code]](https://github.com/OpenLMLab/LEval/blob/main/Baselines/llama2-chat-test.py) and PI (vicuna1.5-16k trained on ShareGPT)[[code]](https://github.com/OpenLMLab/LEval/blob/main/Baselines/vicuna-test.py).  Chatglm2-32k has also been included and the results for these models will be released soon.
-- [2023.8.14] **Coursera** has been updated to improve the difficulty and please download the newest version. We're sorry for the inconvenience. We are also annotating a new **code test set**.
-- [2023.8.01]  Predictions of LCLMs tested in this paper are available [here](https://drive.google.com/drive/folders/1pPbIXw0eRD_XZVMixZL4BG_SrMwFH3SH?usp=sharing) and judgements from gpt4 are available [here](https://drive.google.com/drive/folders/1bUGs-2isRLaY5xCz8k3mkKDArX6WxX0u?usp=sharing). 
-We hope these can help researchers analyze different models and metrics. We also add a related work section discussing other long sequences benchmarks.  
-
-Please check our paper [v3](https://arxiv.org/abs/2307.11088) for more details.
+- **[2023-10-7]** Final version of our paper can be found [here](https://arxiv.org/abs/2307.11088).
+- **[2023-8-30]** We have annotated two new closed ended tasks:  (i) A [scientific fiction](https://github.com/OpenLMLab/LEval/blob/main/LEval-data/Closed-ended-tasks/sci_fi.jsonl) dataset to test the loyalty to input and (ii) a [code understanding](https://github.com/OpenLMLab/LEval/blob/main/LEval-data/Closed-ended-tasks/codeU.jsonl) dataset. 📢 **L-Eval** has been supported by [OpenCompass](https://github.com/internLM/OpenCompass/). You can  test L-Eval together with other benchmarks for foundation models here.
 
 ## Folders
 The repository is structured as follows:
@@ -43,25 +39,25 @@ The repository is structured as follows:
 ├── Baselines-light/ # scripts to generate the prediction files with 24G gpus
 ├── Evaluation/ # evaluation scripts
 ├── LEval-data/ # test samples
-│   ├── Exam/ # exact match tasks (like multiple-choice)
+│   ├── Closed-ended-tasks/ # exact match tasks (like multiple-choice)
 │   │   ├── test_file.jsonl 
 │   │   └── ...
-│   ├── Generation/ # generation tasks
+│   ├── Open-ended-tasks/ # generation tasks
 │   │   ├── test_file.jsonl
 │   │   └── ...
 ├── Predictions/ # output of models
-│   ├── exam_eval/trubo-16k-0613
+│   ├── exam_eval/turbo-16k-0613
 │   │              ├── <task_name>.pred.jsonl
 │   │              └── ... 
 │   ├── llm_gpt4_eval  
 │   │             ├──<model_name>.pred.jsonl
+│   ├── ngram_eval  
+│   │             ├──model_name
+│   │                     └──task_name.pred.jsonl
 │   ├── ...
-├── Tools/ # useful scripts
-├── figs/ # figures
-├── LICENSE
-└── README.md
-```
+└── Tools/ # useful scripts
 
+```
 <a name="use"></a>
 ## Quick use
 #### Step 1. Download the data 
@@ -92,69 +88,73 @@ Each long document has multiple queries and corresponding responses. The format 
     "evaluation": "Metrics used for evaluation" // e.g., exam, human, LLM, ROUGE, F1, etc.
 }
 ```
+**Statistics** of the data:
+<div align="center">
+<img src="figs/data.png" border="0" width=850px/>
+</div>
 
-#### Step 2. Generate your prediction files
-We test all the baselines with a single 80G A800 GPU. If you encounter the OOM problem, please refer to [multiple GPUs inference](#inference). To generate the output files, you need to add a new file to `Baseline` folder and then replace the model name with your own model. An example of testing chatglm on all closed-ended tasks:
+#### Step 2. Generate your prediction results (Closed-ended tasks)
+**Examples of closed-ended tasks**
+  - Multiple Choice Question (single correct option). Example predicted answer: `A, BCD`
+  - Math Word Problems. Example predicted answer: `3`
+We test all the baselines with a single 80G A800 GPU. If you encounter the OOM problem, please refer to [multiple GPUs inference](#inference). To generate the output files, you need to add a new file to `Baseline` folder and then replace the model name with your own model. An example of testing `gpt3.5-turbo-16k` on closed-ended tasks:
 ```
-python Baselines/chatglm2-test.py --gpu 0 --metric exam_eval (exam_eval, ngram_eval , llm_gpt4_eval, llm_turbo_eval, human_eval)
+python Baselines/turbo16k-test.py  --metric exam_eval (for closed-ended group)  --task_name quality [Optional, if you only want to test one task]
 ```
-where `--metric` means which metric you want to use (e.g., we use `exam_eval` for closed-ended tasks). Details about metrics in L-Eval can be found in the next section. The script will print out the path to the prediction file and you need to press enter to confirm.
+where `--metric` means which metric you want to use (e.g., we use `exam_eval` for closed-ended tasks). Details about metrics in L-Eval can be found in the [next section](#eval). The script will print out the path to the prediction file. You need to press enter to confirm.
 
 #### Step 3. Evaluate the prediction file
-Based on the `--metric` passed in Step 2, you can choose one of the scripts from `Evaluation/auto_eval.py`,  `Evaluation/llm_eval.py`, and `Evaluation/web_human_eval.py`. Then run the following command:
+Step 2 will generate a prediction file. Please run the following command to calculate metric:
 ```
-python Evaluation/auto_eval.py --pred_file Predictions/exam_eval/<your model>/coursera.pred.jsonl 
+python Evaluation/auto_eval.py --pred_file Predictions/exam_eval/turbo-16k-0613/quality.pred.jsonl 
 ```
-Examples of using the  `Evaluation/llm_eval.py`, and `Evaluation/web_human_eval.py` can be found [here](#eval_script)
+
+
+## Evaluating LCLMs on open-ended tasks
+In this part we mainly introduce how to evaluate LCLMs on open-ended tasks.
 
 <a name="eval"></a>
-## How to Evaluate on L-Eval
-In this part, we explain the metrics we used and how to run the evaluation scripts.
+#### Examples of open-ended tasks 
+- Summarization. Example predicted answer: `This paper proposes a new method for ...`
+- Abstractive question answering. Example predicted answer: `The main goal of data science is to answer questions using data.`
 
-### Metrics used in L-Eval
-L-Eval does not only contain open-ended questions (e.g.: multiple choice)  considering that in real-world applications, the generated answer  may not be exactly the same as the reference for long documents tasks. L-Eval is mainly divided into **two groups**: `Close-ended` and `Open-ended` and we use different evaluation metrics for each group.
-#### Closed-ended tasks
-  - Multiple Choice Question (single correct option). Example predicted answer: `A`
-  - Multiple-Answer Questions (multiple correct options). Example predicted answer: `BCD`
-  - Math Word Problems. Example predicted answer: `3`
-  - Topic Retrieval. Example predicted answer: `The benefits of volunteering`
- 
- The only evaluation metric used in these tasks takes the format of *Exact Match*  `"evaluation": "exam"` like grading exam papers.
- The total score is 100 and the score on each question is `100/(number of questions)`. For Multiple-Answer Questions, if the predicted answer does not cover all correct answers, it will only achieve a **quarter** of the score on this question. For example, if the correct answer is `ABC` and the predicted answer is `AC`, the score on this question is `0.25 * [100/(number of questions)]`.
-
-#### Open-ended tasks 
-- Summarization (Summarize a long document into a short paragraph). Example predicted answer: `This paper proposes a new method for ...`
-- Abstractive Question Answering (Answer questions based on a long document). Example predicted answer: `The main goal of data science is to answer questions using data.`
-- Writing Assistance (Assist in writing part of the long document). Example predicted answer: `2 Related Work\n Recent study has shown that ...`
-
-we use the following metrics to evaluate the performance of generation tasks:
-- **GPT4** Evaluation, `"evaluation": "LLM"`: We suggest battling with `turbo-16k-0613` and reporting `Win % vs turbo-16k-0613`. If your model is powerful enough, you can also directly compare it with the most powerful model `Claude-100k`, reporting `Win % vs Claude-100k`. We filter 17 long documents with **96* QA pairs for using GPT4 evaluator and the inference cost for this subset is about **$3**
-- **GPT3.5** Evaluation (biased), `"evaluation": "LLM"` and  `"evaluation": "human"`: The evaluation step is similar to GPT4 evaluation which is cheaper but not accurate as GPT4. It serves as an alternative for researchers who do not have access to the GPT-4 API. We involve more samples for GPT3.5 Evaluation which is 29 long documents with 181 questions and the inference cost for this subset is about **$1**.
-- **N-gram Match** Evaluation (biased),  `"evaluation": "f1" or "rouge"`: Using traditional automatic metrics like F1, ROUGE, etc. The low cost of automatic metrics makes it possible to evaluate all samples in L-Eval.
-- **Human** Evaluation, ` "evaluation": "human"`: The annotators are asked to give a score from `1` to `5`. Automatic metrics can't replace the human evaluation and we filter **12 long documents with 85 questions** for human evaluation, each of which has 3 references: [human-written, GPT4-32k, and Claude-100k]([https://github.com/OpenLMLab/LEval/blob/main/Predictions/human_eval](https://github.com/OpenLMLab/LEval/blob/main/Predictions/human_eval/claude.gpt4.ref.jsonl)). you can visualize and score the results with `python Evaluation/web_for_human_eval.py`.
-  
-❗️**Notice**: For open-ended tasks,  models are informed of the ground truth length via a length instruction,e.g,  *We need a 20 words summary* where 20 is the length of reference answer to reduce the length bias in automatic evaluators.
-
-**Explanation**
-1. The n-gram matching metrics like f1 are very sensitive to the *length* of ground truth (length bias). In our preliminary experiments, the turbo-16k model achieved a very poor f1 score because it usually generates a very lengthy answer with an explanation which decreases the f1 score. 
-To reduce the length bias, we suggest adding the length instruction (e.g., please answer with 10 words) while testing ngram metrics: *rouge* and *f1*.
-2. LLM evaluators also have length biases as they tend to prefer detailed answers. In a pairwise comparison scenario, where it's impossible to feed the entire document, responses with additional or even inaccurate details may receive a higher rating. It's also challenging to judge the adequacy of a detailed summary against a one-sentence reference summary. Therefore, aligning the prediction's granularity with the ground truth ensures a more equitable assessment. 
-
-
-<a name="eval_script"></a>
-### Evaluation Scripts
-- To run our evaluation scripts for automatic evaluation, you need to preprocess your output file in the format of `jsonl files` in [exam_eval](https://github.com/OpenLMLab/LEval/tree/main/Predictions/exam_eval/) and [ngram_eval](https://github.com/OpenLMLab/LEval/tree/main/Predictions/ngram_eval/) folders. Assuming you are going to evaluate the output of `turbo-16k-0613` on a multiple choice task `coursera`, you can run the following cmd:
+Generate your prediction results on open-ended tasks:
 ```
-python Evaluation/auto_eval.py --pred_file Predictions/exam_eval/turbo-16k-0613/coursera.pred.jsonl 
+CMD: python Baselines/turbo16k-test.py --metric ngram_eval (for open-ended group)  --task_name narrative_qa [Optional, if you only want to test one task]
+```
+Generate prediction results on the **95-question** subset:
+```
+CMD: python Baselines/turbo16k-test.py --metric llm_gpt4_eval
+```
+Generate prediction results on the **86-question** subset:
+```
+CMD: python Baselines/turbo16k-test.py --metric human_eval 
+```
+Generate prediction results on the 2 subsets (181 questions) :
+```
+CMD: python Baselines/turbo16k-test.py --metric llm_turbo_eval 
 ```
 
-- To run our evaluation scripts for GPT4/Turbo3.5 evaluation, you have to provide the `api key` in `Evaluation/llm_eval.py` and then run:
-```
-python Evaluation/llm_eval.py --pred_path /path/to/<your model>.pred.jsonl  --judge_model gpt-4 (or gpt-3.5-turbo) --battle_with turbo-16k-0613 (or claude-100k)
-```
-where `--pred_path` means the prediction file. Example prediction files of `Claude-100k (vs turbo-16k)` are available: [for gpt4 evaluation](https://github.com/OpenLMLab/LEval/tree/main/Predictions/llm_gpt4_eval/claude-100k.pred.jsonl) and [for turbo3.5 evaluation](https://github.com/OpenLMLab/LEval/tree/main/Predictions/llm_turbo_eval/claude-100k.pred.jsonl)
 
-- For human evaluation, we provide a very easy-to-use flask web app running on `localhost 127.0.0.1:5000`. You need to copy your prediction file `<model_name>.pred.jsonl` (samples with `evaluation: human`) to the `Predictions/human_eval` folder and then run:
+#### Automatic Metrics
+we use the following automatic metrics to evaluate the performance of generation tasks:
+- **GPT-4/3.5** Evaluation. We suggest using GPT-4 as a judge and battling with `turbo-16k-0613`. We report the win-rate in our paper. Turbo-16k serves as a strong baseline, and you could also opt for `Llama2-4k` to directly demonstrate the extent of your improvements.
+```
+python Evaluation/llm_eval.py --pred_file Predictions/ngram_eval/vicuna-13b-16k/narrative_qa.pred.jsonl --judge_model gpt-4 (or gpt-3.5-turbo) --battle_with Predictions/ngram_eval/turbo-16k-0613 (llama2-13b-chat)/narrative_qa.pred.jsonl
+```
+
+- **N-gram Match** Evaluation (biased), traditional automatic metrics like F1, ROUGE, is very cheap and efficient to calculate. However, they are biased towards the length of the predicted answer. 
+```
+CMD: python Evaluation/auto_eval.py --pred_file Predictions/ngram_eval/vicuna-13b-16k/narrative_qa.pred.jsonl
+```
+#### ❗ Length-Instruction-Enhanced Evaluation
+For open-ended tasks,  models are informed of the ground truth length via a length instruction,e.g,  *We need a 20 words summary* where 20 is the length of reference answer to reduce the length bias in automatic metrics. The figure below shows the improvement in Kendall-Tau correlation with human assessment brought by length-instruction-enhanced evaluation.
+<div align="center">
+<img src="figs/kt_cor.png" border="0" width=450px/>
+</div>
+
+#### Human evaluation, 
+we provide a very easy-to-use flask web app running on `localhost 127.0.0.1:5000`. You need to copy your prediction file `<model_name>.pred.jsonl` (samples with `evaluation: human`) to the `Predictions/human_eval` folder and then run:
 ```
 python Evaluation/web_human_eval.py  --mode begin (or continue)
 ```
@@ -282,6 +282,7 @@ You can score the outputs from different models via the website. After completin
 </div>
 
 ## Acknowledgement
+<a name="ack"></a>
 This work is done by Fudan University and The University of Hong Kong.
 Primary contributors: Chenxin An, Shansan Gong, Ming Zhong, Mukai Li, Jun Zhang, Lingpeng Kong, and Xipeng Qiu.
 

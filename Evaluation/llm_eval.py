@@ -158,7 +158,8 @@ def calculate_win_rate():
 def construct_pairs(pred_file, battle_file):
     pred_samples = read_jsonl(pred_file) # key :   query,   gt (ground truth), <model_name>_pred
     battle_samples = read_jsonl(battle_file)# key :   query,   gt (ground truth), <model_name>_pred, <turbo-16k-0613>_pred
-
+    print(len(pred_samples), len(battle_samples))
+    assert len(pred_samples) == len(battle_samples)
     pred_key = ""
     battle_key = ""
     for key in pred_samples[0]:
@@ -185,23 +186,17 @@ def construct_pairs(pred_file, battle_file):
         sample[battle_key] = battle_key2pred[query+gt]
 
         paired_samples.append(sample)
-    if args.judge_model == "gpt-4":
-        paired_samples = [pair for pair in paired_samples if pair["evaluation"] == "LLM"]
-        # assert len(paired_samples) == 96
-    else:
-        # assert len(paired_samples) == 181
-        pass
-    # input(len(paired_samples))
     return paired_samples, pred_key, battle_key
 
 if __name__ == "__main__":
 
     # gpt4 key
     openai.api_key = "" # please fulfill your api key here
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--judge_model", type=str, default="gpt-4", choices=["gpt-4", "gpt-3.5-turbo"])
     parser.add_argument('--pred_file', default="Predictions/llm_gpt4_eval/<model_name>.pred.jsonl")
-    parser.add_argument('--battle_with', default="turbo-16k-0613", choices=["turbo-16k-0613", "claude-100k"])
+    parser.add_argument('--battle_with', default="turbo-16k-0613")
 
     args = parser.parse_args()
 
@@ -211,12 +206,7 @@ if __name__ == "__main__":
 
     # Load questions
     output_file = args.pred_file.replace("jsonl", "judge.jsonl")
-    if args.judge_model == "gpt-4":
-        battle_file = f"Predictions/llm_gpt4_eval/{args.battle_with}.pred.jsonl"
-    else:
-        battle_file = f"Predictions/llm_turbo_eval/{args.battle_with}.pred.jsonl"
-
-    samples, model_1, model_2 = construct_pairs(args.pred_file, battle_file)
+    samples, model_1, model_2 = construct_pairs(args.pred_file, args.battle_with)
     # Show match stats and prompt enter to continue
     start_idx = 0
     statistics = {"tie":0, "error":0}

@@ -62,13 +62,14 @@ def build_key_data_pairs(args, key_data_pairs, data_save_path):
                 datasets_eval = datasets_closed_ended
             for task_name in datasets_eval:
                 data = load_dataset('L4NLP/LEval', task_name, split='test')
+                data = [d for d in data if d["evaluation"] != "human" and d["evaluation"] != "LLM"]
                 key_data_pairs[to_filename(data_save_path, task_name)] = data
     else:
         for gen_data in datasets_open_ended:
-            # try:
-            #     data = load_dataset('L4NLP/LEval', gen_data, split='test')
-            # except:
-            data = read_jsonl(f"LEval-data/Open-ended-tasks/{gen_data}.jsonl")
+            try:
+                data = load_dataset('L4NLP/LEval', gen_data, split='test')
+            except:
+                data = read_jsonl(f"LEval-data/Open-ended-tasks/{gen_data}.jsonl")
             if args.metric == "llm_turbo_eval":
                 data = [d for d in data if d["evaluation"] == "human" or d["evaluation"] == "LLM"]
             elif "gpt4" in args.metric:

@@ -83,6 +83,8 @@ def main():
 
                 save_d[f'{openai_model}_pred'] = result['result']
                 save_d['source_documents'] = [r.page_content[:100] + '...' for r in result['source_documents']]
+
+
                 print("----------------- [output] vs [ground truth] -----------------")
                 print('[output]:', save_d[f'{openai_model}_pred'], "\n\n" , '[ground truth]:', save_d['gt'])
 

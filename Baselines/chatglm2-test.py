@@ -8,6 +8,7 @@ from tqdm import tqdm
 
 
 
+
 def main():
     # openai.api_base = "https://api.openai-sb.com/v1"
     start_idx = 0
@@ -49,10 +50,19 @@ def main():
                     text_inputs = message.format(document=document, inst=inst)
                 except:
                     text_inputs = message
+
+
                 save_d['prompt'] = message.replace(document, '<long input>')
                 response, history = model.chat(tokenizer, text_inputs, history=[], do_sample=False)
                 save_d[f'{open_source_model}_pred'] = response
                 save_d['evaluation'] = d['evaluation']
+
+                # test the factuality in scientific fiction
+                if "sci_fi" in file_name:
+                    text_inputs = inst.replace("based on the world described in the document.", "based on the real-world knowledge and facts up until your last training") + "\nAnswer:"
+                    response, history = model.chat(tokenizer, text_inputs, history=[], do_sample=False)
+                    save_d[f'{open_source_model}_pred'] += f" [fact: {response}]"
+
                 if start_idx <5:
                     print('document len', num_tokens_from_string(document, tokenizer))
                     print("[document]:",text_inputs[:100] + "...")
@@ -63,6 +73,7 @@ def main():
         fw.close()
 
 
+# please use torch >= 2.0 for ChatGLM
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--metric', choices=["llm_turbo_eval", "llm_gpt4_eval", "exam_eval", "ngram_eval", "human_eval"],
@@ -93,5 +104,6 @@ if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
     model = AutoModel.from_pretrained(model_path, trust_remote_code=True, torch_dtype=torch.bfloat16).to(device)
     model = model.eval()
+
     build_key_data_pairs(args, key_data_pairs, data_save_path)
     sys.exit(main())

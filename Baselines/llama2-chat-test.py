@@ -126,13 +126,24 @@ def main():
                 except:
                     text_inputs = message
                 save_d['prompt'] = message.replace(document, "<long document>")
-                inputs = tokenizer(text_inputs, return_tensors="pt").to(device)
 
+                inputs = tokenizer(text_inputs, return_tensors="pt").to(device)
                 sample = model.generate(**inputs, do_sample=False, max_new_tokens=max_new_tokens)
                 prompt_length = inputs.input_ids.size()[-1]
                 output = tokenizer.decode(sample[0][prompt_length:])
+
                 save_d[f'{open_source_model}_pred'] = output.replace('</s>', '')
                 save_d['evaluation'] = d['evaluation']
+
+                # test the factuality in scientific fiction
+                if "sci_fi" in file_name:
+                    text_inputs = inst.replace("based on the world described in the document.", "based on the real-world knowledge and facts up until your last training") + "\nAnswer:"
+                    inputs = tokenizer(text_inputs, return_tensors="pt").to(device)
+                    sample = model.generate(**inputs, do_sample=False, max_new_tokens=max_new_tokens)
+                    prompt_length = inputs.input_ids.size()[-1]
+                    output = tokenizer.decode(sample[0][prompt_length:])
+                    save_d[f'{open_source_model}_pred'] += f" [fact: {output}]"
+
                 if start_idx < 5:
                     print('document len', num_tokens_from_string(document, tokenizer))
                     print("[document]:",text_inputs[:100] + "...")
