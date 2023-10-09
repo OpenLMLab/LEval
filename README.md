@@ -8,8 +8,7 @@
 L-Eval ([preview on 🤗 HuggingFace Datasets](https://huggingface.co/datasets/L4NLP/LEval) • [check our 📃 paper](https://arxiv.org/abs/2307.11088) ) is a comprehensive Long Context Language Models (LCLMs) evaluation suite with 20 sub-tasks, 508 long documents, and over 2,000 human-labeled query-response pairs encompassing diverse question styles, domains, and input length (3k～200k tokens).
 L-Eval has 2 group: *closed-ended* tasks and *open-ended* tasks. The closed-ended group primarily tests the reasoning and understanding ability regarding a longer context, and the open-ended group consists of more summarization tasks that require aggregation of long document information ([download the data](#use)).
 
-The closed-ended group does not have evaluation fairness issues. While we find that n-gram metrics like rouge, F1 cannot accurately reflect the ability of LCLMs. So, L-Eval does not merely follow metrics used in previous text generation benchmarks . L-Eval mainly uses Length-Instruction-Enhanced (LIE) evaluation and win-rate% vs (Turbo-16k or Llama2) as the main metrics ([open-ended tasks evaluation](#eval)).
-
+The closed-ended group does not have issues with evaluation fairness. However, we have found that n-gram metrics such as ROUGE and F1 cannot accurately reflect the abilities of LCLMs. As such, L-Eval does not solely rely on metrics used in previous text generation benchmarks. Instead, L-Eval primarily utilizes Length-Instruction-Enhanced (LIE) evaluation, and win-rate% against Turbo-16k or Llama2 ([open-ended tasks evaluation](#eval)).
 
 We hope L-Eval could help researchers and developers track the progress of long-context language models (LCLMs) and understand the strengths/shortcomings of different methods. We will also keep up with the **latest releases** of instruction-following LCLMs.
 We are very pleased to answer any questions about L-Eval: `cxan20@fudan.edu.cn`
