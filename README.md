@@ -88,10 +88,6 @@ Each long document has multiple queries and corresponding responses. The format 
     "evaluation": "Metrics used for evaluation" // e.g., exam, human, LLM, ROUGE, F1, etc.
 }
 ```
-**Statistics** of the data:
-<div align="center">
-<img src="figs/data.png" border="0" width=850px/>
-</div>
 
 #### Step 2. Generate your prediction results (Closed-ended tasks)
 **Examples of closed-ended tasks**
@@ -118,7 +114,7 @@ In this part we mainly introduce how to evaluate LCLMs on open-ended tasks.
 - Summarization. Example predicted answer: `This paper proposes a new method for ...`
 - Abstractive question answering. Example predicted answer: `The main goal of data science is to answer questions using data.`
 
-Generate your prediction results on open-ended tasks:
+Generate prediction results on open-ended tasks:
 ```
 CMD: python Baselines/turbo16k-test.py --metric ngram_eval (for open-ended group)  --task_name narrative_qa [Optional, if you only want to test one task]
 ```
@@ -145,7 +141,7 @@ python Evaluation/llm_eval.py --pred_file Predictions/ngram_eval/vicuna-13b-16k/
 
 - **N-gram Match** Evaluation (biased), traditional automatic metrics like F1, ROUGE, is very cheap and efficient to calculate. However, they are biased towards the length of the predicted answer. 
 ```
-CMD: python Evaluation/auto_eval.py --pred_file Predictions/ngram_eval/vicuna-13b-16k/narrative_qa.pred.jsonl
+python Evaluation/auto_eval.py --pred_file Predictions/ngram_eval/vicuna-13b-16k/narrative_qa.pred.jsonl
 ```
 #### ❗ Length-Instruction-Enhanced Evaluation
 For open-ended tasks,  models are informed of the ground truth length via a length instruction,e.g,  *We need a 20 words summary* where 20 is the length of reference answer to reduce the length bias in automatic metrics. The figure below shows the improvement in Kendall-Tau correlation with human assessment brought by length-instruction-enhanced evaluation.
@@ -153,13 +149,18 @@ For open-ended tasks,  models are informed of the ground truth length via a leng
 <img src="figs/kt_cor.png" border="0" width=450px/>
 </div>
 
-#### Human evaluation, 
+#### Human evaluation
 we provide a very easy-to-use flask web app running on `localhost 127.0.0.1:5000`. You need to copy your prediction file `<model_name>.pred.jsonl` (samples with `evaluation: human`) to the `Predictions/human_eval` folder and then run:
 ```
 python Evaluation/web_human_eval.py  --mode begin (or continue)
 ```
 where `--mode` denotes whether you are starting a new evaluation or continuing your previous annotation.  Feel free to close the browser and set `--mode continue` to continue from your last annotation. Once running the script, you have to provide the annotator name and your annotation results will be saved to `Predictions/human_eval/annotation_from_<name>.jsonl`.
 See the running screenshot [here](#human_demo). We  have provided the prediction files from 5 popular models as baselines for human evaluation. if you want to add outputs from other baselines, you can also move the corresponding prediction file to the `Predictions/human_eval` folder.
+
+### Statistics of the data:
+<div align="center">
+<img src="figs/data.png" border="0" width=650px/>
+</div>
 
 
 <a name="submit"></a>
