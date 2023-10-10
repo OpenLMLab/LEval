@@ -6,9 +6,9 @@
 ### *L-Eval: Instituting Standardized Evaluation for Long Context Language Models*
 
 **Data Collection:**   L-Eval ([preview on 🤗 HuggingFace Datasets](https://huggingface.co/datasets/L4NLP/LEval) • [check our 📃 paper](https://arxiv.org/abs/2307.11088) ) is a comprehensive Long Context Language Models (LCLMs) evaluation suite with 20 sub-tasks, 508 long documents, and over 2,000 human-labeled query-response pairs encompassing diverse question styles, domains, and input length (3k～200k tokens).
-L-Eval has 2 group: *closed-ended* tasks and *open-ended* tasks. The closed-ended group primarily tests the reasoning and understanding ability regarding a longer context, and the open-ended group consists of more summarization tasks that require aggregation of long document information ([download the data](#use)).
+L-Eval has 2 groups: *closed-ended* tasks and *open-ended* tasks. The closed-ended group primarily tests the reasoning and understanding ability regarding a longer context, and the open-ended group consists of more summarization tasks that require aggregation of long document information ([download the data](#use)).
 
-**Long Context LLMs Evaluation:**  Closed-ended tasks typically do not present issues with evaluation fairness. However, in real-world long-context tasks, open-ended tasks tend to be more common. We have found that *n-gram* metrics such as ROUGE and F1 cannot accurately reflect the abilities of LCLMs. As such, L-Eval does not solely rely on metrics used in previous text generation benchmarks. Instead, L-Eval primarily utilizes Length-Instruction-Enhanced (LIE) evaluation, and LLM judges (battling with Turbo-16k or Llama2). Please  refer to [open-ended tasks evaluation](#eval)).
+**Long Context LLMs Evaluation:**  Closed-ended tasks typically do not present issues with evaluation fairness. However, in real-world long-context tasks, open-ended tasks tend to be more common. We have found that *n-gram* metrics such as ROUGE and F1 cannot accurately reflect the abilities of LCLMs. As such, L-Eval does not solely rely on metrics used in previous text generation benchmarks. Instead, L-Eval primarily utilizes Length-Instruction-Enhanced (LIE) evaluation, and LLM judges (battling with Turbo-16k or Llama2). Please refer to [open-ended tasks evaluation](#eval)).
 
 We hope L-Eval could help researchers and developers track the progress of long-context language models (LCLMs) and understand the strengths/shortcomings of different methods. We will also keep up with the **latest releases** of instruction-following LCLMs.
 
@@ -26,8 +26,9 @@ We hope L-Eval could help researchers and developers track the progress of long-
 </div>
 
 ## 🔥 Updates of L-Eval 
+- **[2023-10-11]** Results of [LongLora](https://github.com/dvlab-research/LongLoRA) and [Llama2-Long](https://arxiv.org/abs/2309.16039) are coming soon.
 - **[2023-10-7]** Final version of our paper can be found [here](https://arxiv.org/abs/2307.11088).
-- **[2023-8-30]** We have annotated two new closed ended tasks:  (i) A [scientific fiction](https://github.com/OpenLMLab/LEval/blob/main/LEval-data/Closed-ended-tasks/sci_fi.jsonl) dataset to test the loyalty to input and (ii) a [code understanding](https://github.com/OpenLMLab/LEval/blob/main/LEval-data/Closed-ended-tasks/codeU.jsonl) dataset. 📢 **L-Eval** has been supported by [OpenCompass](https://github.com/internLM/OpenCompass/). You can  test L-Eval together with other benchmarks for foundation models here.
+- **[2023-8-30]** We have annotated two new closed-ended tasks:  (i) A [scientific fiction](https://github.com/OpenLMLab/LEval/blob/main/LEval-data/Closed-ended-tasks/sci_fi.jsonl) dataset to test the loyalty to input and (ii) a [code understanding](https://github.com/OpenLMLab/LEval/blob/main/LEval-data/Closed-ended-tasks/codeU.jsonl) dataset. 📢 **L-Eval** has been supported by [OpenCompass](https://github.com/internLM/OpenCompass/). You can  test L-Eval together with other benchmarks for foundation models here.
 
 ## Folders
 The repository is structured as follows:
