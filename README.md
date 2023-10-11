@@ -77,7 +77,7 @@ You can also directly clone this repo:
 ```
 git clone https://github.com/OpenLMLab/LEval.git
 ```
-The test data is in `LEval-data`.
+The test data is in [LEval-data](https://github.com/OpenLMLab/LEval/tree/main/LEval-data).
 
 Each long document has multiple queries and corresponding responses. The format of each sample is as follows:
 ```json
@@ -102,14 +102,14 @@ python Baselines/turbo16k-test.py  --metric exam_eval (for closed-ended group)  
 The script will save the prediction results to a local file. You need to press enter to confirm the path. Details about open-ended tasks can be found in the [next section](#eval).
 
 #### Step 3. Evaluate the prediction file
-Given the prediction file generated in Step 2, please run the following command to calculate metric:
+Given the prediction file generated in Step 2, please run the following command to calculate the metric:
 ```
 python Evaluation/auto_eval.py --pred_file Predictions/exam_eval/turbo-16k-0613/quality.pred.jsonl 
 ```
 
 
 ## Evaluating LCLMs on open-ended tasks
-In this part we mainly introduce how to evaluate LCLMs on open-ended tasks.
+In this part, we mainly introduce how to evaluate LCLMs on open-ended tasks.
 
 <a name="eval"></a>
 #### Examples of open-ended tasks 
@@ -140,6 +140,8 @@ we use the following automatic metrics to evaluate the performance of generation
 ```
 python Evaluation/llm_eval.py --pred_file Predictions/ngram_eval/vicuna-13b-16k/narrative_qa.pred.jsonl --judge_model gpt-4 (or gpt-3.5-turbo) --battle_with Predictions/ngram_eval/turbo-16k-0613 (llama2-13b-chat)/narrative_qa.pred.jsonl
 ```
+Please add the following judgment prompt in Long context settings:
+> Additional details or information that are not mentioned in the reference answer cannot be considered as advantages and do not let them sway your judgment.
 
 - **N-gram Match** Evaluation (biased), traditional automatic metrics like F1, ROUGE, is very cheap and efficient to calculate. However, they are biased towards the length of the predicted answer. 
 ```
