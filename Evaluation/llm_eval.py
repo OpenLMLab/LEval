@@ -210,7 +210,7 @@ def construct_pairs(pred_file, battle_file):
 
 if __name__ == "__main__":
 
-    # gpt4 key
+    # gpt4/3.5 key
     openai.api_key = "" # please fulfill your api key here
 
     parser = argparse.ArgumentParser()
