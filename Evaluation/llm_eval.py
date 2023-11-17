@@ -1,7 +1,5 @@
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from  Tools.jsonl_utils import *
 
 import argparse
 import json
@@ -33,6 +31,27 @@ reverse_model_map = {
     "model_2": "model_1",
 }
 
+def read_jsonl(train_fn):
+    res = []
+    evaluator = set()
+    with open(train_fn) as f:
+        for i, line in enumerate(f):
+            try:
+                sample = json.loads(line)
+                evaluator.add(sample["evaluation"])
+                res.append(sample)
+            except:
+                continue
+    if "rouge" in evaluator or "f1" in evaluator:
+        res = [sample for sample in res if sample["evaluation"] =="rouge" or sample["evaluation"] == "f1"]
+    print(f"loading from {train_fn}, there are {len(res)} samples")
+    return res
+
+
+def write_jsonl(data, fn):
+    with open(fn, "w") as f:
+        for line in data:
+            print(json.dumps(line), file=f)
 
 def play_a_match_pair(sample, output_file: str, model_1, model_2):
     global start_idx
@@ -159,6 +178,7 @@ def construct_pairs(pred_file, battle_file):
     pred_samples = read_jsonl(pred_file) # key :   query,   gt (ground truth), <model_name>_pred
     battle_samples = read_jsonl(battle_file)# key :   query,   gt (ground truth), <model_name>_pred, <turbo-16k-0613>_pred
     print(len(pred_samples), len(battle_samples))
+
     assert len(pred_samples) == len(battle_samples)
     pred_key = ""
     battle_key = ""
