@@ -330,9 +330,8 @@ def process_gt_judge(response):
     response = response.lower()
     resp_list = response.split("[fact:")
     loyalty = resp_list[0]
-    match = re.search(r'\[fact: (.*?)\]', response)
-    fact = match.group(1)
-    return [loyalty, fact]  # 输出: False
+    fact = resp_list[1][:-1]
+    return [loyalty.strip(), fact.strip()]
 
 
 def process_output_judge(response):
@@ -354,8 +353,10 @@ def process_output_judge(response):
         elif "false" in word:
             output_list.append("false")
             break
-    if output_list == 1:
+
+    if len(output_list) == 1:
         output_list.append("<error>")
+
     return output_list # disable random guess for the dataset for high variance
 
 
