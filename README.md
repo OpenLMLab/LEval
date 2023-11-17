@@ -290,9 +290,9 @@ You can score the outputs from different models via the website. After completin
 ## Acknowledgement
 <a name="ack"></a>
 This work is done by Fudan University and The University of Hong Kong.
-Primary contributors: Chenxin An, Shansan Gong, Ming Zhong, Mukai Li, Jun Zhang, Lingpeng Kong, and Xipeng Qiu.
+Primary contributors: Chenxin An, Shansan Gong, Ming Zhong, Xingjian zhao, Mukai Li, Jun Zhang, Lingpeng Kong, and Xipeng Qiu.
 
-We also thank the following people for their valuable suggestions and contributions: Siyu Ren, Zhiyong Wu,  Qinyuan Cheng, Bo Wang
+We also thank the following people for their valuable suggestions: Siyu Ren, Zhiyong Wu,  Qinyuan Cheng, Bo Wang, Yukang Chen
 
 **We sincerely appreciate the assistance provided by the following works for L-Eval**:
 - We download the videos to form the long documents from [Coursera website](https://www.coursera.org/)
