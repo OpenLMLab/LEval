@@ -139,7 +139,7 @@ CMD: python Baselines/turbo16k-test.py --metric llm_turbo_eval
 we use the following automatic metrics to evaluate the performance of generation tasks:
 - **GPT-4/3.5** Evaluation. We suggest using GPT-4 as a judge and battling with `turbo-16k-0613`. We report the win-rate in our paper. Turbo-16k serves as a strong baseline, and you could also opt for `Llama2-4k` to directly demonstrate the extent of your improvements.
 ```
-python Evaluation/llm_eval.py --pred_file Predictions/ngram_eval/vicuna-13b-16k/narrative_qa.pred.jsonl --judge_model gpt-4 (or gpt-3.5-turbo) --battle_with Predictions/ngram_eval/turbo-16k-0613 (llama2-13b-chat)/narrative_qa.pred.jsonl
+python Evaluation/llm_eval.py --pred_file Predictions/ngram_eval/vicuna-13b-16k/narrative_qa.pred.jsonl --judge_model gpt-4 (or gpt-3.5-turbo) --battle_with Predictions/ngram_eval/turbo-16k-0613 (or llama2-13b-chat)/narrative_qa.pred.jsonl
 ```
 Please add the following judgment prompt in Long context settings:
 > Additional details or information that are not mentioned in the reference answer cannot be considered as advantages and do not let them sway your judgment.
