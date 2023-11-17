@@ -121,11 +121,11 @@ Generate prediction results on open-ended tasks:
 ```
 CMD: python Baselines/turbo16k-test.py --metric ngram_eval (for open-ended group)  --task_name narrative_qa [Optional, if you only want to test one task]
 ```
-Generate prediction results on the **95-question** subset:
+Generate prediction results on the **96-question** subset (GPT-4 evaluation subset):
 ```
 CMD: python Baselines/turbo16k-test.py --metric llm_gpt4_eval
 ```
-Generate prediction results on the **86-question** subset:
+Generate prediction results on the **85-question** subset (human evaluation subset):
 ```
 CMD: python Baselines/turbo16k-test.py --metric human_eval 
 ```
