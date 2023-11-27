@@ -26,7 +26,10 @@ def main():
             document = d['input']
             cnt = 0
             while num_tokens_from_string(document, tokenizer) > max_length:
-                document = " ".join(document.split(" ")[:max_length - cnt])  # chunk the input len into 16k tokens
+                if "code" not in file_name:
+                    document = " ".join(document.split(" ")[:max_length - cnt]) # chunk the input len from right
+                else:
+                    document = " ".join(document.split(" ")[cnt - max_length:]) # chunk the input len from left
                 cnt += 250
 
             instructions = d['instructions']
