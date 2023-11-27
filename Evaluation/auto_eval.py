@@ -346,7 +346,7 @@ def process_output_judge(response):
             break
     if len(output_list) == 0:
         output_list.append("<error>")
-    for word in loyalty.split():
+    for word in fact.split():
         if "true" in word:
             output_list.append("true")
             break
