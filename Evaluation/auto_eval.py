@@ -407,7 +407,7 @@ if __name__ == '__main__':
         elif "gsm" in args.pred_file:
             references.append([process_math(instance["gt"])])
             predictions.append(process_math(instance[prediction_key]))
-        elif "code" in args.pred_file:
+        elif "codeU" in args.pred_file:
             references.append([process_gt_code(instance["gt"])])
             predictions.append(process_output_code(instance[prediction_key], instance["gt"]))
         elif "sci_fi" in args.pred_file:
