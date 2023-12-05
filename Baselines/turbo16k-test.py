@@ -45,7 +45,7 @@ def main():
                 save_d = {}
                 save_d['query'] = inst
                 save_d['gt'] = out
-                if "gsm" in file_name or "code" in file_name:
+                if "gsm" in file_name or "codeU" in file_name:
                     messages.append({"role": "user", "content": document + "\n\n" + inst})
                     save_d['prompt'] = sys_prompt + inst
 
