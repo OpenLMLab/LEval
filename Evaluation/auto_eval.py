@@ -390,6 +390,13 @@ if __name__ == '__main__':
 
     predictions = []
     references = []
+    if  "topic_retrieval_longchat" in args.pred_file:
+        references = [[], [], []]
+        predictions = [[], [], []]
+    elif "sci_fi" in args.pred_file:
+        references = [[], []]
+        predictions = [[], []]
+
     config_name = None
 
     with_options = False
@@ -398,7 +405,7 @@ if __name__ == '__main__':
             with_options = True
             break
 
-    for instance in pred_data:
+    for i,instance in enumerate(pred_data):
         if instance["evaluation"] not in SUPPORT_METRICS:
             continue
         if with_options:
@@ -410,10 +417,16 @@ if __name__ == '__main__':
         elif "codeU" in args.pred_file:
             references.append([process_gt_code(instance["gt"])])
             predictions.append(process_output_code(instance[prediction_key], instance["gt"]))
+        elif "topic_retrieval_longchat" in args.pred_file:
+            references[i%3].append([instance["gt"]])
+            predictions[i%3].append(instance[prediction_key])
         elif "sci_fi" in args.pred_file:
             loyalty, fact = process_gt_judge(instance["gt"])
-            references += [[loyalty], [fact]]
-            predictions +=  process_output_judge(instance[prediction_key])
+            references[0].append([loyalty])
+            references[1].append([fact])
+            loyalty_pred, fact_pred = process_output_judge(instance[prediction_key])
+            predictions[0].append(loyalty_pred)
+            predictions[1].append(fact_pred)
         else:
             references.append([instance["gt"]])
             predictions.append(instance[prediction_key])
@@ -423,8 +436,35 @@ if __name__ == '__main__':
     if config_name in SUPPORT_METRICS:
         print("begin evaluating:", config_name)
         LEval_metric = LEvalMetrics(config_name=config_name)
-        metrics = LEval_metric.compute(predictions=predictions, references=references)
-        print(metrics)
+        if "topic_retrieval_longchat" in args.pred_file:
+            output_str = ""
+            balance_score = 0
+            for i in range(len(predictions)):
+                pred = predictions[i]
+                ref = references[i]
+                metrics = LEval_metric.compute(predictions=pred, references=ref)
+                output_str += f"first {i+1} sentence retrieval score: {metrics}\n"
+                balance_score += metrics["exact_match"]
+            print(output_str[:-1])
+            print(f"average score of the 1st/2nd/3rd sentence retrieval: {balance_score/3}")
+
+        elif "sci_fi" in args.pred_file:
+            output_str = ""
+            balance_score = 0
+            for i in range(len(predictions)):
+                pred = predictions[i]
+                ref = references[i]
+                metrics = LEval_metric.compute(predictions=pred, references=ref)
+                if i ==0:
+                    output_str += f"loyalty score: {metrics}\n"
+                else:
+                    output_str += f"fact score: {metrics}"
+                balance_score += metrics["exact_match"]
+            print(output_str)
+            print(f"average score of fact and loyalty: {balance_score/2}")
+        else:
+            metrics = LEval_metric.compute(predictions=predictions, references=references)
+            print(metrics)
     else:
         print(config_name, "evaluation is not ready")
         input("press enter to continue calculate other metrics")
