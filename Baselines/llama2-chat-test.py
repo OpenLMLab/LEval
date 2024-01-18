@@ -118,7 +118,7 @@ def main():
                     context = document + "\n\n" + inst
                     message = B_INST + B_SYS + sys_prompt + E_SYS + context + E_INST
                 elif args.metric == "exam_eval":
-                    context = "Document is as follows. {document} \nQuestion: {inst}.  Please directly give answer without any additonal output or explanation "
+                    context = "Document is as follows. {document} \nQuestion: {inst}.  Please directly give the answer without any additional output or explanation "
                     message = B_INST + B_SYS + sys_prompt + E_SYS + context + E_INST
                     message += "\nAnswer:"
                 else:
@@ -140,7 +140,7 @@ def main():
 
                 # test the factuality in scientific fiction
                 if "sci_fi" in file_name:
-                    text_inputs = inst.replace("based on the world described in the document.", "based on the real-world knowledge and facts up until your last training") + "\nAnswer:"
+                    text_inputs = inst.replace("based on the world described in the document.", "based on the real-world knowledge and facts up until your last training") + "Please directly answer without any additional output or explanation. \nAnswer:"
                     inputs = tokenizer(text_inputs, return_tensors="pt").to(device)
                     sample = model.generate(**inputs, do_sample=False, max_new_tokens=max_new_tokens)
                     prompt_length = inputs.input_ids.size()[-1]
