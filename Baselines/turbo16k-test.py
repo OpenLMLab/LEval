@@ -50,7 +50,7 @@ def main():
                     save_d['prompt'] = sys_prompt + inst
 
                 elif args.metric == "exam_eval":
-                    context = "Document is as follows. {} Question: {} \nPlease directly give answer without any additonal output or explanation\n Answer: "
+                    context = "Document is as follows. {} Question: {} \nPlease directly give answer without any additional output or explanation\n Answer: "
                     messages.append({"role": "user", "content": context.format(document, inst)})
                     save_d['prompt'] = sys_prompt + context
                 else:
@@ -80,7 +80,7 @@ def main():
                         # test the factuality in scientific fiction
                         if "sci_fi" in file_name:
                             text_inputs = inst.replace("based on the world described in the document.",
-                                                       "based on the real-world knowledge and facts up until your last training") + "\nAnswer:"
+                                                       "based on the real-world knowledge and facts up until your last training") + "\nPlease directly give answer without any additional output or explanation \nAnswer:"
                             messages.append({"role": "user", "content": text_inputs})
                             response = openai.ChatCompletion.create(
                                 model="gpt-3.5-turbo-16k-0613",
