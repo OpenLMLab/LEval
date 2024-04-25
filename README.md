@@ -26,7 +26,14 @@ We hope L-Eval could help researchers and developers track the progress of long-
 </div>
 
 ## 🔥 Updates of L-Eval 
-- We have recently updated the `auto_eval.py` script. Please use the newest script for more *accurate* answer extraction. Sorry for the inconvenience :(
+- **[2024-4-25]** We add the results for Llama3 8b/70b.
+
+| Model | TOEFL | QuALITY | Coursera | SFiction | GSM | CodeU |
+|--------|------|------|-------|-------|-------|-------|
+| Llama3-8b  | 82.89 | 64.85 |  53.77 | 69.53 |  79.00 | 2.22|
+| Llama3-70b | 84.75 |80.19 | 75.87 | 72.65 |  90.00 |  6.67 | 
+| GPT4-32k (2023) | 84.38 |82.17 | 75.58 | 74.99 |  96.00 |  25.55 | 
+
 - **[2023-10-7]** Final version of our paper can be found [here](https://arxiv.org/abs/2307.11088).
 - **[2023-8-30]** We have annotated two new closed-ended tasks:  (i) A [scientific fiction](https://github.com/OpenLMLab/LEval/blob/main/LEval-data/Closed-ended-tasks/sci_fi.jsonl) dataset to test the loyalty to input and (ii) a [code understanding](https://github.com/OpenLMLab/LEval/blob/main/LEval-data/Closed-ended-tasks/codeU.jsonl) dataset. 📢 **L-Eval** has been supported by [OpenCompass](https://github.com/internLM/OpenCompass/). You can  test L-Eval together with other benchmarks for foundation models here.
 
