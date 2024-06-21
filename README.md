@@ -30,8 +30,8 @@ We hope L-Eval could help researchers and developers track the progress of long-
 
 | Model | TOEFL | QuALITY | Coursera | SFiction | GSM | CodeU |
 |--------|------|------|-------|-------|-------|-------|
-| Llama3-8b  | 82.89 | 64.85 |  53.77 | 69.53 |  79.00 | 2.22|
-| Llama3-70b | 84.75 |80.19 | 75.87 | 72.65 |  90.00 |  6.67 | 
+| [Llama3-8b-Instruct](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct)  | 82.89 | 64.85 |  53.77 | 69.53 |  79.00 | 2.22|
+| [Llama3-70b-Instruct](https://huggingface.co/meta-llama/Meta-Llama-70B-Instruct) | 84.75 |80.19 | 75.87 | 72.65 |  90.00 |  6.67 | 
 | GPT4-32k (2023) | 84.38 |82.17 | 75.58 | 74.99 |  96.00 |  25.55 | 
 
 - **[2023-10-7]** Final version of our paper can be found [here](https://arxiv.org/abs/2307.11088).
