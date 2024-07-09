@@ -238,6 +238,8 @@ def _compute_helper(
 
 def process_output_mc(response):
     # Use regular expression to replace anything that is not A, B, C or D with an empty string
+    if len(response.strip()) == 0:
+        return "None"
     if response in "ABCD":
         return response
     if "coursera" not in args.pred_file:
